@@ -7,5 +7,6 @@ urlpatterns=[
     path("login/student/",views.LoginViewClass,name="Student login"),
     path('Assosation/Members/',views.AssosationViewClass,name="Assosation members"),
     path('placment/',views.PlacmentViewClass,name="List of top placed and batch"),
-    path('placment/<str:Batch>/',views.PlacmentBatchViewClass,name="placment of a batch")
+    path('placment/<str:Batch>/',views.PlacmentBatchViewClass,name="placment of a batch"),
+    
 ]
