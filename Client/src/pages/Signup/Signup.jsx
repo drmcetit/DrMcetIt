@@ -77,8 +77,9 @@ const Signup = () => {
             navigate("/");
         } catch (error) {
             console.error("Error sending data:", error.response?.data);
-            alert("Error: " + (error.response?.data?.error || error.response?.data.username[0]));
-            if(error.response?.data.username[0])
+            alert("Error: " + (error.response?.data?.error || error.response?.data.register));
+
+            if(error.response?.data.register)
             setUsernameAlreadyExists(true);
         }
     }
@@ -113,7 +114,7 @@ const Signup = () => {
                       <Form.Control.Feedback type="invalid">{errors.username}</Form.Control.Feedback>
                     </InputGroup>
                   </Form.Group>
-                  { usernameAlreadyExist && <p className="m-0 text-danger fs-6">User name already exists</p>}
+                  
 
                   <Form.Group className="mb-3">
                     <Form.Label>collegeMail</Form.Label>
@@ -130,6 +131,7 @@ const Signup = () => {
                       <Form.Control.Feedback type="invalid">{errors.collegeMail}</Form.Control.Feedback>
                     </InputGroup>
                   </Form.Group>
+                  { usernameAlreadyExist && <p className="m-0 text-danger fs-6">You'r college mail id has already register</p>}
 
                   <Form.Group className="mb-3">
                     <Form.Label>Password</Form.Label>

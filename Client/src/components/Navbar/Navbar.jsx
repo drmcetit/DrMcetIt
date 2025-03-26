@@ -43,6 +43,11 @@ const ModernNavbar = () => {
       setExpanded(false)
     }
   }
+  useEffect(() => {
+    if(localStorage.getItem("access_token")){
+      setState("Profile");
+    }
+  })
 
   return (
     <Navbar

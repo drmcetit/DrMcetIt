@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 
-const Login = () => {
+export const Login = () => {
   const [formData, setFormData] = useState({ collegeMail: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,6 +16,7 @@ const Login = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  //console.log(formData)
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -38,35 +39,18 @@ const Login = () => {
       );
       console.log("Server Response:", loginResponse.data);
 
+      localStorage.setItem("access_token", loginResponse.data.access_token);
+        localStorage.setItem("refresh_token", loginResponse.data.refresh_token);
 
-      if (loginResponse.status === 200) {
-        // Obtain JWT Tokens (Access & Refresh)
-        const tokenResponse = await axios.post(
-          "http://127.0.0.1:8000/login/",
-          {
-            collegeMail: formData.collegeMail, // SimpleJWT expects 'username' instead of 'collegeMail'
-            password: formData.password,
-          },
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
-        );
-
-        // Store tokens in localStorage
-        localStorage.setItem("access_token", tokenResponse.data.access_token);
-        localStorage.setItem("refresh_token", tokenResponse.data.refresh_token);
-
-        console.log(tokenResponse.data.access);
-        console.log(tokenResponse.data);
+        console.log(loginResponse.data.access);
+        console.log(loginResponse.data);
 
         navigate("/");
-      } else {
-        setError(loginResponse.data.error || "Something went wrong.");
-      }
     } catch (error) {
-      console.error("Error response:", error.response?.data || error.message);
-      setError(error.response?.data?.detail || "Invalid collegeMail or password.");
+      console.error("Error response:", error.loginResponse?.data || error.message);
+      console.error("Error sending data:", error.loginResponse?.data);
+      console.log("Server loginResponse:", loginResponse.data);
+      setError(error.loginResponse?.data?.detail || "Invalid collegeMail or password.");
     } finally {
       setIsSubmitting(false);
     }
@@ -94,7 +78,7 @@ const Login = () => {
                         <FaEnvelope />
                       </InputGroup.Text>
                       <Form.Control
-                        type="collegeMail"
+                        type="email"
                         name="collegeMail"
                         placeholder="Enter your collegeMail"
                         value={formData.collegeMail}
@@ -144,7 +128,7 @@ const Login = () => {
               {/* Sign Up Link */}
               <div className="card-footer text-center">
                 <p className="mb-0">
-                  Don't have an account? <Link to="/signup" className="text-primary">Sign Up</Link>
+                  Don't have an account? <Link to="/student-signup" className="text-primary">Sign Up</Link>
                 </p>
               </div>
             </div>
@@ -162,4 +146,3 @@ const Login = () => {
   );
 };
 
-export default Login;
