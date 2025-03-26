@@ -42,7 +42,7 @@ class AssosiationMembersModel(models.Model):
     Name=models.CharField(max_length=30)
     Desigination=models.CharField(max_length=30)
     Year=models.CharField(max_length=10)
-    ProfilePic=models.ImageField(upload_to="Assosiation Members")
+    ProfilePic=models.ImageField(upload_to="Assosiation Members",null=True)
 
     def __str__(self):
         return f"{self.Name}-{self.Desigination}"

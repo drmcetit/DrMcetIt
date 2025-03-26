@@ -1,10 +1,15 @@
+import json
+
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth import login 
 
 from rest_framework import generics
 from rest_framework import status
 from rest_framework import views
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import AssosiationMembersModel,PlacementModel,StudentModel
 from .serializers import AssositationSerializer,PlacmentSerializer,RegisterSerializers
@@ -38,11 +43,11 @@ class Register(generics.CreateAPIView):
         #Mail=727623BIT***@mcet.in
         
         if(CollegeMail[12:20]!="@mcet.in"):
-            return JsonResponse({"register":"Enter the valid email id"},status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({"register":"Enter the valid Email ID"},status=status.HTTP_401_UNAUTHORIZED)
         qs=User.objects.filter(username=CollegeMail) 
         
         if qs.exists():
-            return JsonResponse({"register":"User already exisit"},status=status.HTTP_403_FORBIDDEN)
+            return JsonResponse({"register":" You'r college Email ID has already registered"},status=status.HTTP_403_FORBIDDEN)
         password=serializer.validated_data.get("password")
         verify=serializer.validated_data.pop('confirmPassword')
         
@@ -60,6 +65,48 @@ class Register(generics.CreateAPIView):
         return JsonResponse({'register':"Success"},status=status.HTTP_200_OK)
         
 RegisterClass=Register.as_view()
+
+class LoginView(views.APIView):
+    permission_classes=[]
+    authentication_classes=[]
+
+    def post(self, request, *args, **kwargs):
+
+        data=json.loads(request.body)
+        collegeMail=data.get('collegeMail')
+        password=data.get('password')
+
+        if not username or not password:
+            return JsonResponse({"login": "Email and Password are required."},status=status.HTTP_400_BAD_REQUEST)
+
+        # user = authenticate(email=email, password=password)
+        user=User.objects.filter(username=collegeMail)
+        if(user.exists()):
+            user=User.objects.get(username=collegeMail)
+            if not(check_password(password,user.password)):
+
+                return JsonResponse({"login": "Invalid Email or Password."},status=status.HTTP_404_NOT_FOUND)                
+        else:
+            return JsonResponse({"login": "Invalid Email or Password."},status=status.HTTP_401_UNAUTHORIZED)
+        # user = authenticate(request, email=email, password=password)
+        if user:
+            if user.is_active:
+                login(request,user)
+                # Generate JWT tokens
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+
+                return JsonResponse({
+                    "login": "success",
+                    "access_token": access_token,
+                    "refresh_token": str(refresh)
+                }, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse({"login": "User account is inactive."},status=status.HTTP_403_FORBIDDEN)
+        else:
+            return JsonResponse({"login": "Invalid Email or Password."},status=status.HTTP_401_UNAUTHORIZED)
+
+LoginViewClass=LoginView.as_view()
 
 class AssosationView(generics.ListAPIView):
 

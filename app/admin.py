@@ -1,10 +1,8 @@
 from django.contrib import admin
 
-from .models import AssosiationMembersModel,PlacementModel
+from .models import AssosiationMembersModel,PlacementModel,StudentModel
 
-# Register your models here.
-
-
+admin.site.register(StudentModel)
 
 class AssosiationAdmin(admin.ModelAdmin):
     list_filter=('Year',)
