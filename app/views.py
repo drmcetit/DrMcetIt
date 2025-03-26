@@ -30,16 +30,17 @@ from .serializers import AssositationSerializer,PlacmentSerializer,RegisterSeria
 
 # HomeViewClass=HomeView.as_view()
 
-class Register(generics.CreateAPIView):
-    queryset=User.objects.all()
-    serializer_class=RegisterSerializers
+class Register(views.APIView):
+    # queryset=User.objects.all()
+    # serializer_class=RegisterSerializers
     permission_classes=[]
     authentication_classes=[]
     
-    def perform_create(self, serializer):
+    def post(self,request):
         #In User model I stored the mail id as the username as it must be uniquee
-        username=serializer.validated_data.get("username")
-        CollegeMail=serializer.validated_data.get("collegeMail")  #unqiue field 
+        data=json.loads(request.body)
+        username=data.get("username")
+        CollegeMail=data.get("collegeMail")  #unqiue field 
         #Mail=727623BIT***@mcet.in
         
         if(CollegeMail[12:20]!="@mcet.in"):
@@ -48,8 +49,8 @@ class Register(generics.CreateAPIView):
         
         if qs.exists():
             return JsonResponse({"register":" You'r college Email ID has already registered"},status=status.HTTP_403_FORBIDDEN)
-        password=serializer.validated_data.get("password")
-        verify=serializer.validated_data.pop('confirmPassword')
+        password=data.get("password")
+        verify=data.get('confirmPassword')
         
         if(password!=verify):
             return JsonResponse({'register':"failed check password"},status=status.HTTP_403_FORBIDDEN)
@@ -59,7 +60,7 @@ class Register(generics.CreateAPIView):
         user.set_password(password)
         user.save()
         #setting the username
-        student=StudentModel(Name=username)
+        student=StudentModel(User=user,Name=username)
         student.save()
         print(f"User Added({username})")
         return JsonResponse({'register':"Success"},status=status.HTTP_200_OK)
