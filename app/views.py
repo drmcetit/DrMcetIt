@@ -76,7 +76,7 @@ class LoginView(views.APIView):
         collegeMail=data.get('collegeMail')
         password=data.get('password')
 
-        if not username or not password:
+        if not collegeMail or not password:
             return JsonResponse({"login": "Email and Password are required."},status=status.HTTP_400_BAD_REQUEST)
 
         # user = authenticate(email=email, password=password)

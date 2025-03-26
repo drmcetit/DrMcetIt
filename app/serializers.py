@@ -54,3 +54,4 @@ class RegisterSerializers(serializers.ModelSerializer):
             'email',
             'confirmPassword'
         ]
+
