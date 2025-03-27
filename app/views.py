@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -9,10 +10,11 @@ from django.contrib.auth import login
 from rest_framework import generics
 from rest_framework import status
 from rest_framework import views
+from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import AssosiationMembersModel,PlacementModel,StudentModel
-from .serializers import AssositationSerializer,PlacmentSerializer,RegisterSerializers
+from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel
+from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializer
 
 # Create your views here.
 
@@ -60,7 +62,8 @@ class Register(views.APIView):
         user.set_password(password)
         user.save()
         #setting the username
-        student=StudentModel(User=user,Name=username)
+        RollNum=CollegeMail[:12]
+        student=StudentModel(User=user,Name=username,RollNum=RollNum)
         student.save()
         print(f"User Added({username})")
         return JsonResponse({'register':"Success"},status=status.HTTP_200_OK)
@@ -169,3 +172,48 @@ class PlacmentBatchView(generics.ListAPIView):
         #return super().get(request, *args, **kwargs)
 
 PlacmentBatchViewClass=PlacmentBatchView.as_view()
+
+class EventCertificateView(generics.ListCreateAPIView):
+    queryset=EventModel.objects.all()
+    serializer_class=EventSerializer
+
+    def get(self, request, *args, **kwargs):
+        user=self.request.user
+        print("------------->",user.username)
+        if(user is None or user.is_anonymous):
+            return JsonResponse({"login":"Login Required"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        Student=StudentModel.objects.filter(User=user)
+        if not(Student.exists()):
+            return JsonResponse({"Login":"Login required","username":user.username})
+        Student=StudentModel.objects.get(User=user)
+        department="IT"
+        print("=============>",datetime.now().month)
+        currentMonth=datetime.now().month
+        currentYear=datetime.now().year
+        if(currentMonth<=5):
+            year=f"{currentYear-1}-{currentYear}"
+        else:
+            year=f"{currentYear}-{currentYear+1}"
+        studentName=Student.Name
+        RollNum=Student.RollNum
+
+        return Response({"department":department,"year":year,"student":studentName,"rollNo":RollNum},status=status.HTTP_201_CREATED)
+    
+    def perform_create(self, serializer):
+
+        #To ensure that the user doesn't submit the result of same event more than once
+        #we take limited fields-Roll No,Event,Date,Organizer and Club to ensure the high possiblity
+        RollNum=serializer.validated_data.get("rollNo")
+        Event=serializer.validated_data.get("event")
+        Date=serializer.validated_data.get("date")
+        Organizer=serializer.validated_data.get("organizer")
+        Club=serializer.validated_data.get("club")
+        
+        qs=EventModel.objects.filter(rollNo=RollNum,event=Event,date=Date,organizer=Organizer,club=Club)
+        if(qs.exists()):
+            return JsonResponse({"submitted":"you have already submitted "},status=status.HTTP_406_NOT_ACCEPTABLE)
+        serializer.save()
+        # return super().perform_create(serializer)
+
+EventCertificateViewClass=EventCertificateView.as_view()

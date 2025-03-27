@@ -28,7 +28,7 @@ from django.contrib.auth.models import User
 class StudentModel(models.Model):
     User=models.ForeignKey(User,on_delete=models.CASCADE)
     Name=models.CharField(max_length=30,null=True)
-    #Roll_num=models.CharField(max_length=15)
+    RollNum=models.CharField(max_length=15,null=True)
     Section=models.CharField(max_length=1,null=True)
     Leetcode=models.URLField(null=True)
     Github=models.URLField(null=True)
@@ -60,4 +60,27 @@ class PlacementModel(models.Model):
 
     def __str__(self):
         return f"{self.Name}-{self.Batch}"
+    
+class EventModel(models.Model):
+    #For event submissions
+    department=models.CharField(max_length=5,default='IT')
+    year=models.CharField(max_length=10)
+    student=models.CharField(max_length=30) #studentName
+    rollNo=models.CharField(max_length=25)
+    level=models.CharField(max_length=50)
+    event=models.CharField(max_length=150)
+    type=models.CharField(max_length=30)   #currilcular and co curri cular
+    mode=models.CharField(max_length=25)
+    category=models.CharField(max_length=25)
+    place=models.CharField(max_length=50)
+    date=models.DateField(null=True)
+    organizer=models.CharField(max_length=100)
+    club=models.CharField(max_length=75,null=True,blank=True)
+    award=models.CharField(max_length=30,null=True)
+    teamInd=models.CharField(max_length=10)
+    description=models.TextField(null=True,blank=True)
+    proofAttachment=models.FileField(upload_to="Certificates",null=True)
+
+    def __str__(self):
+        return f"{self.student}-{self.event}"
     

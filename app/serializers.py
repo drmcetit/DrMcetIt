@@ -1,19 +1,6 @@
 from rest_framework import serializers
 
-from .models import AssosiationMembersModel,PlacementModel
-from django.contrib.auth.models import User
-
-# class carouselSerializer(serializers.ModelSerializer):
-
-#     class Meta:
-#         model=carouselModel
-#         fields=[
-#             'Titile',
-#             'Description',
-#             'ButtonText',
-#             'Image',
-#             'Display'
-#         ]
+from .models import AssosiationMembersModel,PlacementModel,EventModel
 
 class AssositationSerializer(serializers.ModelSerializer):
 
@@ -41,17 +28,28 @@ class PlacmentSerializer(serializers.ModelSerializer):
             'ProfilePic'
         ]
 
-class RegisterSerializers(serializers.ModelSerializer):
+class EventSerializer(serializers.ModelSerializer):
 
-    confirmPassword=serializers.CharField(write_only=True)
-    collegeMail=serializers.CharField(write_only=True)
     class Meta:
-        model=User
+        model=EventModel
         fields=[
-            'username',
-            'collegeMail',
-            'password',
-            'email',
-            'confirmPassword'
+            'department',
+            'year',
+            'student',
+            'rollNo',
+            'level',
+            'event',
+            'type',
+            'mode',
+            'category',
+            'place',
+            'date',
+            'organizer',
+            'club',
+            'award',
+            'teamInd',
+            'description',
+            'proofAttachment'
+
         ]
 
