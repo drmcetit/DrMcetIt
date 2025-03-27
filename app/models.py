@@ -26,6 +26,7 @@ from django.contrib.auth.models import User
 #         return f"{self.YearCode}"
 
 class StudentModel(models.Model):
+    #CC,Mentor,
     User=models.ForeignKey(User,on_delete=models.CASCADE)
     Name=models.CharField(max_length=30,null=True)
     RollNum=models.CharField(max_length=15,null=True)

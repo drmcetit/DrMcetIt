@@ -185,20 +185,20 @@ class EventCertificateView(generics.ListCreateAPIView):
         
         Student=StudentModel.objects.filter(User=user)
         if not(Student.exists()):
-            return JsonResponse({"Login":"Login required","username":user.username})
+            return JsonResponse({"Login":"Login required","username":user.username},status=status.HTTP_401_UNAUTHORIZED)
         Student=StudentModel.objects.get(User=user)
         department="IT"
-        print("=============>",datetime.now().month)
-        currentMonth=datetime.now().month
-        currentYear=datetime.now().year
-        if(currentMonth<=5):
-            year=f"{currentYear-1}-{currentYear}"
-        else:
-            year=f"{currentYear}-{currentYear+1}"
+        # print("=============>",datetime.now().month)
+        # currentMonth=datetime.now().month
+        # currentYear=datetime.now().year
+        # if(currentMonth<=5):
+        #     year=f"{currentYear-1}-{currentYear}"
+        # else:
+        #     year=f"{currentYear}-{currentYear+1}"
         studentName=Student.Name
         RollNum=Student.RollNum
 
-        return Response({"department":department,"year":year,"student":studentName,"rollNo":RollNum},status=status.HTTP_201_CREATED)
+        return Response({"department":department,"student":studentName,"rollNo":RollNum},status=status.HTTP_200_OK)
     
     def perform_create(self, serializer):
 
