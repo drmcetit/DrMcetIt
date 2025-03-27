@@ -67,21 +67,7 @@ const HeroCarousel = () => {
     }
   }, [isPlaying, slides.length])
 
-  const home =  async() => {
-    try{
-      const response = await axios
-      .get('http://127.0.0.1:8000/api/')
-      .then(response => {
-        console.log(response.data)
-        })
-    }
-    catch{
-      console.log("Error", error.response.data)
-    }
-  }
-  useEffect(()=>{
-    home()
-  },[])
+
 
 
   return (

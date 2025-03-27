@@ -6,7 +6,8 @@ import "./Navbar.css"
 const ModernNavbar = () => {
   const [expanded, setExpanded] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [state, setState] =useState("Login")
+  const [state, setState] =useState(true)
+  const [profile, setProfile] = useState("/student-login")
   const navbarRef = useRef(null)
 
   useEffect(() => {
@@ -45,7 +46,10 @@ const ModernNavbar = () => {
   }
   useEffect(() => {
     if(localStorage.getItem("access_token")){
-      setState("Profile");
+      setState(false);
+    }
+    if(localStorage.getItem("access_token")){
+      setProfile("/student-profile");
     }
   })
 
@@ -64,9 +68,9 @@ const ModernNavbar = () => {
 
         <div className="d-flex align-items-center">
           <div className="login-button-container d-lg-none">
-          <Link to="/student-login" className="text-primary">
-            <button className='btn btn-primary text-white ms-lg-3 px-4'>{state}</button>
-          </Link>
+          {state && <Link to="/student-login" className="text-primary">
+            <button className='btn btn-primary text-white ms-lg-3 px-4'>Login</button>
+          </Link>}
           </div>
 
           <Navbar.Toggle
@@ -99,12 +103,15 @@ const ModernNavbar = () => {
             <Nav.Link href="#contact" onClick={handleNavItemClick} className="nav-link">
               Association
             </Nav.Link>
+            <Nav.Link href={profile} onClick={handleNavItemClick} className="nav-link">
+              Profile
+            </Nav.Link>
           </Nav>
 
           <div className="d-none d-lg-block">
-          <Link to="/student-login" className="text-primary">
-            <button className='btn btn-primary text-white ms-lg-3 px-4'>{state}</button>
-          </Link>
+          {state && <Link to="/student-login" className="text-primary">
+            <button className='btn btn-primary text-white ms-lg-3 px-4'>Login</button>
+          </Link>}
           </div>
         </Navbar.Collapse>
       </Container>

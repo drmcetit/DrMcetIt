@@ -117,13 +117,13 @@ const Signup = () => {
                   
 
                   <Form.Group className="mb-3">
-                    <Form.Label>collegeMail</Form.Label>
+                    <Form.Label>College Mail</Form.Label>
                     <InputGroup>
                       <InputGroup.Text><FaEnvelope /></InputGroup.Text>
                       <Form.Control
                         type="collegeMail"
                         name="collegeMail"
-                        placeholder="Enter your collegeMail"
+                        placeholder="72762*bit***@mcet.in"
                         value={formData.collegeMail}
                         onChange={handleChange}
                         isInvalid={!!errors.collegeMail}

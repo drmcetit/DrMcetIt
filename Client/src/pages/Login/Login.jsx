@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Container, Row, Col, Form, Button, InputGroup } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,7 +8,7 @@ export const Login = () => {
   const [formData, setFormData] = useState({ collegeMail: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,7 +23,6 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError("");
 
     try {
       // First, authenticate the user
@@ -47,10 +44,10 @@ export const Login = () => {
 
         navigate("/");
     } catch (error) {
-      console.error("Error response:", error.loginResponse?.data || error.message);
+      setError(true);
+      console.error("Error response:", error.loginResponse?.data || error.loginResponse.data);
       console.error("Error sending data:", error.loginResponse?.data);
       console.log("Server loginResponse:", loginResponse.data);
-      setError(error.loginResponse?.data?.detail || "Invalid collegeMail or password.");
     } finally {
       setIsSubmitting(false);
     }
@@ -61,18 +58,18 @@ export const Login = () => {
       <Container>
         <Row className="justify-content-center min-vh-100 align-items-center">
           <Col md={8} lg={6} xl={5}>
-            <div className="auth-card mt-5">
+            <div className="auth-card p-md-5 p-1 border rounded-1">
               <div className="card-header text-center">
                 <h4 className="mb-0">Welcome Back</h4>
                 <p className="text-muted">Sign in to your account</p>
               </div>
 
               <div className="card-body">
-                {error && <p className="text-danger text-center">{error}</p>}
+                {error && <p className="text-danger text-center">Invalid college Mail ID or Password</p>}
                 <Form onSubmit={handleSubmit}>
                   {/* collegeMail Field */}
                   <Form.Group className="mb-3">
-                    <Form.Label>collegeMail</Form.Label>
+                    <Form.Label>College Mail</Form.Label>
                     <InputGroup>
                       <InputGroup.Text>
                         <FaEnvelope />
@@ -80,7 +77,7 @@ export const Login = () => {
                       <Form.Control
                         type="email"
                         name="collegeMail"
-                        placeholder="Enter your collegeMail"
+                        placeholder="72762*bit***@mcet.in"
                         value={formData.collegeMail}
                         onChange={handleChange}
                         required

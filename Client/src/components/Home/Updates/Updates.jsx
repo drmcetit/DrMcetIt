@@ -6,7 +6,7 @@ export const Updates = () => {
     <>
         <section className="w-100 py-5 bg-light my-5">
             <Container>
-                <h2 className="mb-4">Update's</h2>
+                <h2 className="mb-4">Research Paper's</h2>
                 <Row className="g-4">
                     <Col className="col-12"  >
                         <Card className="shadow-sm">
