@@ -46,6 +46,13 @@ def count(count,step):
         if(num>max):
             return max
     return int(num/2)
+
+# def spertateDate(serializer):
+#     #Seprate the date and time and return date in the qs
+#     for i in serializer:
+#         i[""]
+
+
 class Register(views.APIView):
     # queryset=User.objects.all()
     # serializer_class=RegisterSerializers
@@ -256,7 +263,7 @@ class DashbordView(generics.ListAPIView):
             RecentActivity.append(Activity)
 
         #Badges
-        orginalParticpataionCount=EventModel.objects.filter(rollNo=student.RollNum,place="participation").count()
+        orginalParticpataionCount=toatlCount
         originalWinnerCount=EventModel.objects.filter(rollNo=student.RollNum).exclude(place="participation").count()
 
         print("-------->",originalWinnerCount)

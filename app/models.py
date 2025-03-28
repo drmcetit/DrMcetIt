@@ -81,7 +81,7 @@ class EventModel(models.Model):
     mode=models.CharField(max_length=25)
     category=models.CharField(max_length=25)
     place=models.CharField(max_length=50)
-    date=models.DateField(null=True)
+    date=models.DateTimeField(null=True)
     organizer=models.CharField(max_length=100)
     club=models.CharField(max_length=75,null=True,blank=True)
     

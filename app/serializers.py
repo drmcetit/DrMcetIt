@@ -46,7 +46,6 @@ class EventSerializer(serializers.ModelSerializer):
             'date',
             'organizer',
             'club',
-            'award',
             'teamInd',
             'description',
             'proofAttachment'
