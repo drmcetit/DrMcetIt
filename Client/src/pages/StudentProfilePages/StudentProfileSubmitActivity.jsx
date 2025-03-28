@@ -10,6 +10,19 @@ export const StudentProfileSubmitActivity = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validated, setValidated] = useState(false);
   const [fileName, setFileName] = useState('');
+  const [empty, setEmpty] = useState(false)
+  const [emptyYear, setEmptyYear] = useState(false)
+  const [emptyLevel, setEmptyLevel] = useState(false)
+  const [emptyEvent, setEmptyEvent] = useState(false)
+  const [emptyType, setEmptyType] = useState(false)
+  const [emptyMode, setEmptyMode] = useState(false)
+  const [emptyCategory, setEmptyCategory] = useState(false)
+  const [emptyPlace, setEmptyPlace] = useState(false)
+  const [emptyDate, setEmptyDate] = useState(false)
+  const [emptyOrganizer, setEmptyOrganizer] = useState(false)
+  const [emptyTeam, setEmptyTeam] = useState(false)
+  const [emptyDes, setEmptyDes] = useState(false)
+
   
   const [formData, setFormData] = useState({
     department: 'IT',
@@ -34,13 +47,13 @@ export const StudentProfileSubmitActivity = () => {
   // Show award field only if place is "Award"
 //   const showAwardField = formData.place === 'Award';
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
+const handleChange = (event) => {
+  setFormData({
+    ...formData,
+    [event.target.name]: event.target.value, // Ensure value is updated correctly
+  });
+};
+
 
   const handleFileChange = (event) => {
     const file = event.target.files[0]; // Get the selected file
@@ -145,28 +158,135 @@ const handleSubmit = async (event) => {
       formDataToSend.append("proofAttachment", formData.proofAttachment);
   }
 
+  // try {
+  //     const response = await fetch("http://127.0.0.1:8000/api/event/certificate/", {
+  //         method: 'POST',
+  //         headers: {
+  //             'X-CSRFToken': csrfToken,
+  //             'Authorization': `Bearer ${localStorage.getItem("access_token")}`
+  //         },
+  //         body: formDataToSend
+  //     });
+  //     // alert("Data sent ")
+  //     //navigate("/student-profile/view/participated")
+
+  //     if (!response.ok) {
+  //         const errorText = await response.text();
+  //         throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+  //     }
+
+  //     const result = await response.json();
+  //     console.log("Form submission successful:", result);
+      
+  //   } catch (error) {
+  //     if(
+  //       error instanceof Error
+  //       ){
+  //         alert("Error: " + error.message);
+  //         }
+  //     alert("Error submitting form. Please try again.");
+  //     console.log(error.year[0])
+  //     console.error('Error submitting form:', error);
+  // }
+
   try {
-      const response = await fetch("http://127.0.0.1:8000/api/event/certificate/", {
-          method: 'POST',
-          headers: {
-              'X-CSRFToken': csrfToken,
-              'Authorization': `Bearer ${localStorage.getItem("access_token")}`
-          },
-          body: formDataToSend
-      });
-      alert("Data sent ")
-
-      if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+    const response = await fetch("http://127.0.0.1:8000/api/event/certificate/", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrfToken,
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+      },
+      body: formDataToSend,
+    });
+  
+    if (!response.ok) {
+      let errorData;
+      
+      // Try parsing JSON response if possible
+      try {
+        errorData = await response.json();
+      } catch (jsonError) {
+        throw new Error(`HTTP error! Status: ${response.status} - Unable to parse error response`);
       }
+  
+      if (response.status === 400 && typeof errorData === "object") {
+        let missingFields = Object.keys(errorData);
+        // alert(`Please fill in all required fields: ${missingFields.join(", ")}`);
+        // alert(`Please fill in all required fields: ${missingFields.date}`);
+        setEmpty(true);
+        console.error("Validation errors:", errorData);
+        console.error("Validation errors:", errorData.type);
 
-      const result = await response.json();
-      console.log("Form submission successful:", result);
+        if(errorData.year[0])
+          setEmptyYear(true);
+        else
+        setEmptyYear(false);
+        
+        if(errorData.event[0])
+          setEmptyEvent(true);
+        else
+        setEmptyEvent(false);
 
+        if(errorData.level[0])
+          setEmptyLevel(true);
+        else
+        setEmptyLevel(false);
+
+        if(errorData.type[0])
+          setEmptyType(true);
+        else
+        setEmptyType(false);
+
+        if(errorData.mode[0])
+          setEmptyMode(true);
+        else
+        setEmptyMode(false);
+
+        if(errorData.category[0])
+          setEmptyCategory(true);
+        else
+        setEmptyCategory(false);
+
+        if(errorData.place[0])
+          setEmptyPlace(true);
+        else
+        setEmptyPlace(false);
+
+        if(errorData.organizer[0])
+          setEmptyOrganizer(true);
+        else
+        setEmptyOrganizer(false);
+
+        if(errorData.date[0])
+          setEmptyDate(true);
+        else
+        setEmptyDate(false);
+        
+        if(errorData.type[0])
+          setEmptyTeam(true);
+        else
+        setEmptyTeam(false);
+
+        if(errorData.description[0])
+          setEmptyDes(true);
+        else
+        setEmptyDes(false);
+
+        return;
+      }
+  
+      throw new Error(`HTTP error! Status: ${response.status} - ${JSON.stringify(errorData)}`);
+    }
+  
+    const result = await response.json();
+    console.log("Form submission successful:", result);
+    navigate("/student-profile/view/participated");
+    
   } catch (error) {
-      console.error('Error submitting form:', error);
+    console.error("Error submitting form:", error);
+    //alert("Error submitting form. Please try again.");
   }
+  
 };
 
 
@@ -177,9 +297,9 @@ const handleSubmit = async (event) => {
       <StudentSideBar/>
       <div className="flex-grow-1 p-4">
         <div className="mb-4">
-          <h1 className="h3 fw-bold">Submit Co-Curricular Activity</h1>
+          <h1 className="h3 fw-bold">Submit Your Activity</h1>
           <p className="text-muted">
-            Add details about your co-curricular activities and achievements
+            Add details about your co-curricular and extra curricular activities and achievements
           </p>
         </div>
 
@@ -219,6 +339,12 @@ const handleSubmit = async (event) => {
                     <option value="2020-2021">2020-2021</option>
                     <option value="2019-2020">2019-2020</option>
                   </Form.Select>
+                  {
+                    emptyYear &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the year
+                    </div>
+                  }
                   <Form.Control.Feedback type="invalid">
                     Please select the academic year.
                   </Form.Control.Feedback>
@@ -253,7 +379,7 @@ const handleSubmit = async (event) => {
                     placeholder="Enter your roll number"
                     value={formData.rollNo}
                     onChange={handleChange}
-                    required
+                    readOnly
                   />
                   <Form.Control.Feedback type="invalid">
                     Please enter your roll number.
@@ -265,15 +391,21 @@ const handleSubmit = async (event) => {
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Group className="mb-3" controlId="event">
-                  <Form.Label>Event Name</Form.Label>
+                  <Form.Label>Event Name (Ex: Technical quize, Among Us)</Form.Label>
                   <Form.Control
                     type="text"
                     name="event"
-                    placeholder="Enter the name of the event"
+                    placeholder="Enter the name of the event "
                     value={formData.event}
                     onChange={handleChange}
                     required
                   />
+                  {
+                    emptyEvent &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the event
+                    </div>
+                  }
                   <Form.Control.Feedback type="invalid">
                     Please provide an event name.
                   </Form.Control.Feedback>
@@ -290,12 +422,20 @@ const handleSubmit = async (event) => {
                     required
                   >
                     <option value="">Select Level</option>
-                    <option value="Inter-university">Inter-university</option>
+                    <option value="Zonal">Zonal</option>
                     <option value="State">State</option>
+                    <option value="District">District</option>
                     <option value="National">National</option>
-                    <option value="International">International</option>
+                    <option value="Inter-college">Inter-college</option>
                     <option value="Intra-college">Intra-college</option>
+                    <option value="Other-college">Other-college</option>
                   </Form.Select>
+                  {
+                    emptyLevel &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the level
+                    </div>
+                  }
                   <Form.Control.Feedback type="invalid">
                     Please select the competition level.
                   </Form.Control.Feedback>
@@ -317,6 +457,12 @@ const handleSubmit = async (event) => {
                     <option value="Co-curricular">Co-curricular</option>
                     <option value="Extra-curricular">Extra-curricular</option>
                   </Form.Select>
+                  {
+                    emptyType &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the type
+                    </div>
+                  }
                   <Form.Control.Feedback type="invalid">
                     Please select the activity type.
                   </Form.Control.Feedback>
@@ -336,6 +482,12 @@ const handleSubmit = async (event) => {
                     <option value="Internal">Internal (within institution)</option>
                     <option value="External">External (outside institution)</option>
                   </Form.Select>
+                  {
+                    emptyMode &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the mode
+                    </div>
+                  }
                   <Form.Control.Feedback type="invalid">
                     Please select the mode.
                   </Form.Control.Feedback>
@@ -361,6 +513,12 @@ const handleSubmit = async (event) => {
                     <option value="Competition">Competition</option>
                     <option value="Conference">Conference</option>
                   </Form.Select>
+                  {
+                    emptyCategory &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the category
+                    </div>
+                  }
                   <Form.Control.Feedback type="invalid">
                     Please select a category.
                   </Form.Control.Feedback>
@@ -379,11 +537,17 @@ const handleSubmit = async (event) => {
                     required
                   >
                     <option value="">Select place</option>
-                    <option value="Award">First</option>
-                    <option value="Award">Second</option>
-                    <option value="Award">Third</option>
-                    <option value="Participated">Participated</option>
+                    <option value="First">First</option>
+                    <option value="Second">Second</option>
+                    <option value="Third">Third</option>
+                    <option value="Participation">Participated</option>
                   </Form.Select>
+                  {
+                    emptyPlace &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the place
+                    </div>
+                  }
                   <Form.Control.Feedback type="invalid">
                     Please select your place.
                   </Form.Control.Feedback>
@@ -403,6 +567,12 @@ const handleSubmit = async (event) => {
                   <Form.Text className="text-muted">
                     Format: DD-MM-YYYY
                   </Form.Text>
+                  {
+                    emptyDate &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the date
+                    </div>
+                  }
                   <Form.Control.Feedback type="invalid">
                     Please select a date.
                   </Form.Control.Feedback>
@@ -422,6 +592,12 @@ const handleSubmit = async (event) => {
                     <option value="Individual">Individual</option>
                     <option value="Team">Team</option>
                   </Form.Select>
+                  {
+                    emptyTeam &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the team
+                    </div>
+                  }
                   <Form.Control.Feedback type="invalid">
                     Please select participation type.
                   </Form.Control.Feedback>
@@ -441,6 +617,12 @@ const handleSubmit = async (event) => {
                     onChange={handleChange}
                     required
                   />
+                  {
+                    emptyOrganizer &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the organizer
+                    </div>
+                  }
                   <Form.Control.Feedback type="invalid">
                     Please provide the organizer name.
                   </Form.Control.Feedback>
@@ -501,13 +683,19 @@ const handleSubmit = async (event) => {
               <Form.Text className="text-muted">
                 Provide details about your participation, role, and what you learned (10-500 characters).
               </Form.Text>
+              {
+                    emptyDes &&
+                    <div className=" text-danger" role="alert">
+                      Please select the year of the descriptions
+                    </div>
+                  }
               <Form.Control.Feedback type="invalid">
                 Please provide a description (10-500 characters).
               </Form.Control.Feedback>
             </Form.Group>
             
             <Form.Group className="mb-4">
-  <Form.Label htmlFor="file-upload">Proof of Participation</Form.Label>
+  <Form.Label htmlFor="file-upload">Proof of Participation (if certificate available or pictures)</Form.Label>
   <div className="d-flex align-items-center gap-3">
     <Button 
       variant="outline-secondary" 

@@ -42,7 +42,7 @@ export const StudentSideBar = () => {
           <span className="sidebar-text">Dashboard</span>
         </Link>
 
-        <Link to="/student-profile" className={`sidebar-link ${isActive("/profile/personal") ? "active" : ""}`}>
+        <Link to="/student-profile/info" className={`sidebar-link ${isActive("/student-profile/info") ? "active" : ""}`}>
           <FaUser className="sidebar-icon" />
           <span className="sidebar-text">Personal Info</span>
         </Link>
@@ -65,13 +65,13 @@ export const StudentSideBar = () => {
                 <span className="sidebar-text">Submit Activity</span>
               </Link>
 
-              {/* <Link
-                to="/profile/co-curricular/view"
-                className={`sidebar-link ${isActive("/profile/co-curricular/view") ? "active" : ""}`}
+              <Link
+                to="/student-profile/view/participated"
+                className={`sidebar-link ${isActive("/student-profile/view/participated") ? "active" : ""}`}
               >
                 <FaList className="sidebar-icon" />
-                <span className="sidebar-text">View Submissions</span>
-              </Link> */}
+                <span className="sidebar-text">View Activity</span>
+              </Link>
             </div>
           )}
         </div>
