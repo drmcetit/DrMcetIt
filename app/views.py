@@ -259,8 +259,9 @@ class DashbordView(generics.ListAPIView):
         orginalParticpataionCount=EventModel.objects.filter(rollNo=student.RollNum,place="participation").count()
         originalWinnerCount=EventModel.objects.filter(rollNo=student.RollNum).exclude(place="participation").count()
 
+        print("-------->",originalWinnerCount)
         particpataionCount=count(orginalParticpataionCount,5)
-        WinnerCount=count(originalWinnerCount,3)
+        WinnerCount=count(8,3)
 
         if(particpataionCount>=5):
             particpataionBadgeqs=BadgeModel.objects.filter(Category="participation",Count=particpataionCount).first()
@@ -277,7 +278,7 @@ class DashbordView(generics.ListAPIView):
         serializer=BadgeSerializer(winnerBadgeqs)
         winnerBadge=serializer.data.get('Image')
         
-        return JsonResponse({"totalAcitivities":toatlCount,"cgpa":cgpa,"recentActivities":RecentActivity,"particpataionBadge":particpataionBadge,"winnerBadge":winnerBadge,"particpationCount":orginalParticpataionCount,"WinnerCount":originalWinnerCount},status=status.HTTP_200_OK)
+        return Response({"totalAcitivities":toatlCount,"cgpa":cgpa,"recentActivities":RecentActivity,"particpataionBadge":particpataionBadge,"winnerBadge":winnerBadge,"particpationCount":orginalParticpataionCount,"WinnerCount":originalWinnerCount},status=status.HTTP_200_OK)
 
 DashbordViewClass=DashbordView.as_view()
 
