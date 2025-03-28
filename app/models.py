@@ -84,10 +84,10 @@ class EventModel(models.Model):
     date=models.DateField(null=True)
     organizer=models.CharField(max_length=100)
     club=models.CharField(max_length=75,null=True,blank=True)
-    award=models.CharField(max_length=30,null=True)
+    
     teamInd=models.CharField(max_length=10)
     description=models.TextField(null=True,blank=True)
-    proofAttachment=models.FileField(upload_to="Certificates",null=True)
+    proofAttachment=models.FileField(upload_to="Certificates",null=True,blank=True)
 
     def __str__(self):
         return f"{self.student}-{self.event}"

@@ -256,8 +256,8 @@ class DashbordView(generics.ListAPIView):
             RecentActivity.append(Activity)
 
         #Badges
-        orginalParticpataionCount=EventModel.objects.filter(rollNo=student.RollNum,type="curricular",place="participation").count()
-        originalWinnerCount=EventModel.objects.filter(rollNo=student.RollNum,type="curricular").exclude(place="participation").count()
+        orginalParticpataionCount=EventModel.objects.filter(rollNo=student.RollNum,place="participation").count()
+        originalWinnerCount=EventModel.objects.filter(rollNo=student.RollNum).exclude(place="participation").count()
 
         particpataionCount=count(orginalParticpataionCount,5)
         WinnerCount=count(originalWinnerCount,3)
@@ -314,4 +314,7 @@ class ActivityView(generics.ListAPIView):
         if not(activitiesqs.exists()):
             return JsonResponse({"activities":"There no activities currently"},status=status.HTTP_204_NO_CONTENT)
         
+        activities=EventSerializer(activitiesqs,many=True).data
+        
+        return JsonResponse({"activities":activities},status=status.HTTP_200_OK)
         # return super().get(request, *args, **kwargs)
