@@ -1,3 +1,4 @@
+#Avoid using the complex concept for later easy understanding  
 import json
 from datetime import datetime
 
@@ -293,3 +294,24 @@ class BadgeDetailView(generics.ListAPIView):
         return JsonResponse({"badges":serializer.data},status=status.HTTP_200_OK)
     
 BadgeDetailClass=BadgeDetailView.as_view()
+
+class ActivityView(generics.ListAPIView):
+    queryset=EventModel.objects.all()
+    serializer_class=EventSerializer
+
+    def get(self, request, *args, **kwargs):
+        user=self.request.user
+
+        if (not user.is_authenticated):
+            return JsonResponse({'activities':"Login required"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        student=StudentModel.objects.filter(User=user)
+        if(not student.exists()):
+            return JsonResponse({"activities":"Not a valid student account"},status=status.HTTP_401_UNAUTHORIZED)
+        student=StudentModel.objects.get(User=user)
+
+        activitiesqs=EventModel.objects.filter(rollNo=student.RollNum)
+        if not(activitiesqs.exists()):
+            return JsonResponse({"activities":"There no activities currently"},status=status.HTTP_204_NO_CONTENT)
+        
+        # return super().get(request, *args, **kwargs)

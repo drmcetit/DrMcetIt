@@ -6,7 +6,7 @@ admin.site.register(StudentModel)
 
 class EventCertificateAdmin(admin.ModelAdmin):
     list_filter=('year','event','date','type','category','student')
-    list_display=('student','event','date','award')
+    list_display=('student','event','date','place')
     list_per_page=15
 
 admin.site.register(EventModel,EventCertificateAdmin,)
