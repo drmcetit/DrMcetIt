@@ -270,7 +270,7 @@ class DashbordView(generics.ListAPIView):
         particpataionBadge=serializer.data.get('Image')
 
         if(WinnerCount>=3):
-            winnerBadgeqs=BadgeModel.objects.filter(Category="winner",Count=particpataionCount).first()
+            winnerBadgeqs=BadgeModel.objects.filter(Category="winner",Count=WinnerCount).first()
         else:
             winnerBadgeqs=BadgeModel.objects.get(Count=0)
 
