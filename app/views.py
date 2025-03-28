@@ -261,7 +261,7 @@ class DashbordView(generics.ListAPIView):
 
         print("-------->",originalWinnerCount)
         particpataionCount=count(orginalParticpataionCount,5)
-        WinnerCount=count(8,3)
+        WinnerCount=count(originalWinnerCount,3)
 
         if(particpataionCount>=5):
             particpataionBadgeqs=BadgeModel.objects.filter(Category="participation",Count=particpataionCount).first()
