@@ -47,11 +47,11 @@ def count(count,step):
             return max
     return int(num/2)
 
-# def spertateDate(serializer):
-#     #Seprate the date and time and return date in the qs
-#     for i in serializer:
-#         i[""]
-
+def spertateDate(serializer):
+    #Seprate the date and time and return date in the qs
+    for i in serializer:
+        i["date"]=i["date"][:10]
+    return serializer
 
 class Register(views.APIView):
     # queryset=User.objects.all()
@@ -258,7 +258,7 @@ class DashbordView(generics.ListAPIView):
         for i in RecentActivitiesqs:
             Activity={}
             Activity["Title"]=i.event
-            Activity["Date"]=i.date
+            Activity["Date"]=str(i.date)[:10]
             Activity["Place"]=i.place
             RecentActivity.append(Activity)
 
@@ -323,6 +323,8 @@ class ActivityView(generics.ListAPIView):
             return JsonResponse({"activities":"There no activities currently"},status=status.HTTP_204_NO_CONTENT)
         
         activities=EventSerializer(activitiesqs,many=True).data
-        
+        activities=spertateDate(activities)
         return JsonResponse({"activities":activities},status=status.HTTP_200_OK)
         # return super().get(request, *args, **kwargs)
+
+ActivityViewClass=ActivityView.as_view()

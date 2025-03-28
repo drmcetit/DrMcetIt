@@ -11,4 +11,5 @@ urlpatterns=[
     path('event/certificate/',views.EventCertificateViewClass,name="Certificate register"),
     path('profile/dashboard/',views.DashbordViewClass,name="Dashbord of the student"),
     path("badges/description/",views.BadgeDetailClass,name="Badge description"),
+    path("profile/activities/",views.ActivityViewClass,name="Activites of a student")
 ]
