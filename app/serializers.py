@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import AssosiationMembersModel,PlacementModel,EventModel
+from .models import AssosiationMembersModel,PlacementModel,EventModel,StudentModel,BadgeModel
 
 class AssositationSerializer(serializers.ModelSerializer):
 
@@ -53,3 +53,33 @@ class EventSerializer(serializers.ModelSerializer):
 
         ]
 
+class StudentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=StudentModel
+        fields=[
+            'User',
+            'Name',
+            'RollNum',
+            'Section',
+            'CC',
+            'Mentor',
+            'cgpa',
+            'Leetcode',
+            'Github',
+            'Linkedin',
+            'HackerRank'
+        ]
+
+class BadgeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=BadgeModel
+        fields=[
+            "Title",
+            "Description",
+            "Category",
+            "Count",
+            "Image"
+        ]
+        

@@ -8,5 +8,7 @@ urlpatterns=[
     path('assosation/members/',views.AssosationViewClass,name="Assosation members"),
     path('placment/',views.PlacmentViewClass,name="List of top placed and batch"),
     path('placment/<str:Batch>/',views.PlacmentBatchViewClass,name="placment of a batch"),
-    path('event/certificate/',views.EventCertificateViewClass,name="Certificate register")
+    path('event/certificate/',views.EventCertificateViewClass,name="Certificate register"),
+    path('profile/dashbord/',views.DashbordViewClass,name="Dashbord of the student"),
+    path("badges/description/",views.BadgeDetailClass,name="Badge description"),
 ]

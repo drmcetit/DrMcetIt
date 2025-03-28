@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 
 # Create your models here.
 
@@ -25,16 +27,21 @@ from django.contrib.auth.models import User
 #     def __str__(self):
 #         return f"{self.YearCode}"
 
+
 class StudentModel(models.Model):
     #CC,Mentor,
     User=models.ForeignKey(User,on_delete=models.CASCADE)
     Name=models.CharField(max_length=30,null=True)
     RollNum=models.CharField(max_length=15,null=True)
     Section=models.CharField(max_length=1,null=True)
+    cgpa=models.FloatField(null=True)
     Leetcode=models.URLField(null=True)
     Github=models.URLField(null=True)
     Linkedin=models.URLField(null=True)
     HackerRank=models.URLField(null=True)
+    CC=models.CharField(max_length=30,null=True)
+    Mentor=models.CharField(max_length=30,null=True)
+    CurrentArrear=models.IntegerField(null=True,default=0)
 
     def __str__(self):
         return f"{self.User.username}-{self.Name}"
@@ -84,4 +91,13 @@ class EventModel(models.Model):
 
     def __str__(self):
         return f"{self.student}-{self.event}"
-    
+
+class BadgeModel(models.Model):
+    Title=models.CharField(max_length=30)
+    Description=models.TextField()
+    Category=models.CharField(max_length=15)
+    Count=models.PositiveIntegerField()
+    Image=models.ImageField(upload_to="Badges")
+
+    def __str__(self):
+        return f"{self.Title}-{self.Category}"

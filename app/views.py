@@ -13,8 +13,8 @@ from rest_framework import views
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel
-from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializer
+from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel
+from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializer,StudentSerializer,BadgeSerializer
 
 # Create your views here.
 
@@ -32,6 +32,19 @@ from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializ
 
 # HomeViewClass=HomeView.as_view()
 
+def count(count,step):
+    num=step
+    if(count<step):
+        return 0
+    if(step==5):
+        max=80
+    else:
+        max=15
+    while(num<=count):
+        num*=2
+        if(num>max):
+            return max
+    return int(num/2)
 class Register(views.APIView):
     # queryset=User.objects.all()
     # serializer_class=RegisterSerializers
@@ -180,7 +193,7 @@ class EventCertificateView(generics.ListCreateAPIView):
     def get(self, request, *args, **kwargs):
         user=self.request.user
         print("------------->",user.username)
-        if(user is None or user.is_anonymous):
+        if(not User.is_authenticated):
             return JsonResponse({"login":"Login Required"},status=status.HTTP_401_UNAUTHORIZED)
         
         Student=StudentModel.objects.filter(User=user)
@@ -217,3 +230,66 @@ class EventCertificateView(generics.ListCreateAPIView):
         # return super().perform_create(serializer)
 
 EventCertificateViewClass=EventCertificateView.as_view()
+
+class DashbordView(generics.ListAPIView):
+    queryset=StudentModel.objects.all()
+    serializer_class=StudentSerializer
+
+    def get(self, request, *args, **kwargs):
+        User=self.request.user
+        if(not User.is_authenticated):
+            return JsonResponse({"Login":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        student=StudentModel.objects.get(User=User)
+        toatlCount=EventModel.objects.filter(rollNo=student.RollNum).count()
+        cgpa=student.cgpa
+
+        RecentActivitiesqs=EventModel.objects.filter(rollNo=student.RollNum).order_by("-date")[:4]
+        RecentActivity=[]
+
+        for i in RecentActivitiesqs:
+            Activity={}
+            Activity["Title"]=i.event
+            Activity["Date"]=i.date
+            Activity["Place"]=i.place
+            RecentActivity.append(Activity)
+
+        #Badges
+        orginalParticpataionCount=EventModel.objects.filter(rollNo=student.RollNum,type="curricular",place="participation").count()
+        originalWinnerCount=EventModel.objects.filter(rollNo=student.RollNum,type="curricular").exclude(place="participation").count()
+
+        particpataionCount=count(orginalParticpataionCount,5)
+        WinnerCount=count(originalWinnerCount,3)
+
+        if(particpataionCount>=5):
+            particpataionBadgeqs=BadgeModel.objects.filter(Category="participation",Count=particpataionCount).first()
+        else:
+            particpataionBadgeqs=BadgeModel.objects.get(Count=0)
+        serializer=BadgeSerializer(particpataionBadgeqs)
+        particpataionBadge=serializer.data.get('Image')
+
+        if(WinnerCount>=3):
+            winnerBadgeqs=BadgeModel.objects.filter(Category="winner",Count=particpataionCount).first()
+        else:
+            winnerBadgeqs=BadgeModel.objects.get(Count=0)
+
+        serializer=BadgeSerializer(winnerBadgeqs)
+        winnerBadge=serializer.data.get('Image')
+        
+        return JsonResponse({"totalAcitivities":toatlCount,"cgpa":cgpa,"recentActivities":RecentActivity,"particpataionBadge":particpataionBadge,"winnerBadge":winnerBadge,"particpationCount":orginalParticpataionCount,"WinnerCount":originalWinnerCount},status=status.HTTP_200_OK)
+
+DashbordViewClass=DashbordView.as_view()
+
+class BadgeDetailView(generics.ListAPIView):
+
+    queryset=BadgeModel.objects.all()
+    serializer_class=BadgeSerializer
+
+    def get(self, request, *args, **kwargs):
+        qs=BadgeModel.objects.all().exclude(Count=0)
+        serializer=BadgeSerializer(qs,many=True)
+        print(serializer.data)
+
+        return JsonResponse({"badges":serializer.data},status=status.HTTP_200_OK)
+    
+BadgeDetailClass=BadgeDetailView.as_view()
