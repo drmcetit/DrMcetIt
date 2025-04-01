@@ -494,7 +494,7 @@ class ProfileEditView(generics.RetrieveUpdateAPIView):
         serialize=StudentSerializer(studentqs,data=request.data,partial=True)
 
         if(serialize.is_valid()):
-            if(serialize.validated_data('profilePic') is None):
+            if(serialize.validated_data.get('profilePic') is None):
                 serialize.validated_data.pop('profilePic')
             serialize.save()
             #return Response(serialize.data, status=status.HTTP_200_OK)
