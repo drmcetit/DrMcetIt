@@ -33,21 +33,25 @@ from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializ
 
 # HomeViewClass=HomeView.as_view()
 
-def count(count,step):
-    num=step
-    if(count<step):
-        return 0
-    if(step==5):
-        max=80
-        mul=2
-    else:
-        max=15
-        mul=3
-    while(num<=count):#10
-        num*=mul
-        if(num>max):
+def count_participation(count):#9,3
+    num=5
+    if(count<5):
+        return 0 
+    while(num<=count):#3<=9
+        num*=2
+        if(num>80):
             return max
     return int(num/2)
+
+def count_winner(count):#9,3
+    num=3
+    if(count<3):
+        return 0 
+    while(num<=count):#3<=9
+        num+=3
+        if(num>15):
+            return max
+    return int(num-3)
 
 def spertateDate(serializer):
     #Seprate the date and time and return date in the qs
@@ -330,11 +334,11 @@ class DashbordView(generics.ListAPIView):
 
         #Badges
         orginalParticpataionCount=toatlCount
-        originalWinnerCount=EventModel.objects.filter(rollNo=student.RollNum).exclude(place="participation").count()
-
+        # originalWinnerCount=EventModel.objects.filter(rollNo=student.RollNum).exclude(place="participation").count()
+        originalWinnerCount=9
         print("-------->",originalWinnerCount)
-        particpataionCount=count(orginalParticpataionCount,5)
-        WinnerCount=count(originalWinnerCount,3)
+        particpataionCount=count_participation(orginalParticpataionCount)
+        WinnerCount=count_winner(originalWinnerCount)
 
         if(particpataionCount>=5):
             particpataionBadgeqs=BadgeModel.objects.filter(Category="participation",Count=particpataionCount).first()
