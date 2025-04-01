@@ -75,9 +75,9 @@ class StudentSerializer(serializers.ModelSerializer):
             'phoneNum',
             'email'
         ]
-        # extra_kwargs = {
-        #     'profilePic': {'required': False}  # Make image optional
-        # }
+        extra_kwargs = {
+            'profilePic': {'required': False}  # Make image optional
+        }
 
 class BadgeSerializer(serializers.ModelSerializer):
 
