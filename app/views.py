@@ -478,7 +478,7 @@ class ProfileEditView(generics.RetrieveUpdateAPIView):
         student["mentor1"]=mentorName1
         student["mentor2"]=mentorName2
         student["mentor3"]=mentorName3
-        student["collegeEmail"]=user.username
+        student["email"]=user.username
 
         return JsonResponse(student,status=status.HTTP_200_OK)
     

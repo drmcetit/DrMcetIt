@@ -73,7 +73,6 @@ class StudentSerializer(serializers.ModelSerializer):
             'profilePic',
             'batch',
             'phoneNum',
-            'email'
         ]
         extra_kwargs = {
             'profilePic': {'required': False}  # Make image optional

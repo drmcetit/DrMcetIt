@@ -46,7 +46,7 @@ class StudentModel(models.Model):
     CC=models.CharField(max_length=30,null=True)
     Mentor=models.CharField(max_length=30,null=True)
     # CurrentArrear=models.IntegerField(null=True,default=0)
-    email=models.EmailField(null=True)
+    #email=models.EmailField(null=True)
     phoneNum=models.CharField(max_length=13,null=True)
     bio=models.TextField(null=True)
     profilePic=models.ImageField(upload_to="ProfilePic",null=True,blank=True)
