@@ -360,8 +360,7 @@ class DashbordView(generics.ListAPIView):
 
         #Badges
         orginalParticpataionCount=toatlCount
-        # originalWinnerCount=EventModel.objects.filter(rollNo=student.RollNum).exclude(place="participation").count()
-        originalWinnerCount=9
+        originalWinnerCount=EventModel.objects.filter(rollNo=student.RollNum).exclude(place="participation").count()
         print("-------->",originalWinnerCount)
         particpataionCount=count_participation(orginalParticpataionCount)
         WinnerCount=count_winner(originalWinnerCount)
@@ -479,6 +478,7 @@ class ProfileEditView(generics.RetrieveUpdateAPIView):
         student["mentor1"]=mentorName1
         student["mentor2"]=mentorName2
         student["mentor3"]=mentorName3
+        student["collegeEmail"]=user.username
 
         return JsonResponse(student,status=status.HTTP_200_OK)
     
