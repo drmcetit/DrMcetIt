@@ -17,17 +17,19 @@ from django.core.exceptions import ValidationError
 #         return f"{self.Titile}-{self.Display }"
 
 class ClassModel(models.Model):
-    Year=models.IntegerField()
-    Section=models.CharField(max_length=1)
-    RollNum=models.TextField()
+    year=models.IntegerField()
+    section=models.CharField(max_length=1)
+    rollNum=models.TextField()
     #Assign the empid for cc,mentor for easy retrival instead of foreign key
     CC=models.CharField(max_length=10)
-    Mentor1=models.CharField(max_length=10)
-    Mentor2=models.CharField(max_length=10,null=True)
-    Mentor3=models.CharField(max_length=10,null=True)
+    mentor1=models.CharField(max_length=10)
+    mentor2=models.CharField(max_length=10,null=True,blank=True)
+    mentor3=models.CharField(max_length=10,null=True,blank=True)
 
     def __str__(self):
-        return f"{self.Year}-{self.Section}-{self.CC}"
+        user=User.objects.get(username=self.CC)
+        teacher=TeacherModel.objects.get(User=user)
+        return f"{self.year}-{self.section}-{teacher.Name}"
 
 
 class StudentModel(models.Model):

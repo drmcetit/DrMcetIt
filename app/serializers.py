@@ -27,6 +27,7 @@ class PlacmentSerializer(serializers.ModelSerializer):
             'Company',
             'ProfilePic'
         ]
+        
 
 class EventSerializer(serializers.ModelSerializer):
 
@@ -69,11 +70,13 @@ class StudentSerializer(serializers.ModelSerializer):
             'Linkedin',
             'HackerRank',
             'bio',
-            'profilePic',
             'batch',
             'phoneNum',
             'email'
         ]
+        extra_kwargs = {
+            'profilePic': {'required': False}  # Make image optional
+        }
 
 class BadgeSerializer(serializers.ModelSerializer):
 

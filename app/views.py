@@ -13,8 +13,9 @@ from rest_framework import status
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.parsers import MultiPartParser, FormParser
 
-from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel
+from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel,ClassModel
 from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializer,StudentSerializer,BadgeSerializer
 
 # Create your views here.
@@ -70,14 +71,28 @@ class Register(views.APIView):
         data=json.loads(request.body)
         username=data.get("username")
         CollegeMail=data.get("collegeMail")  #unqiue field 
-        #Mail=727623BIT***@mcet.in
-        
-        if(CollegeMail[12:20]!="@mcet.in"):
-            return JsonResponse({"register":"Enter the valid Email ID"},status=status.HTTP_401_UNAUTHORIZED)
+
         qs=User.objects.filter(username=CollegeMail) 
-        
         if qs.exists():
             return JsonResponse({"register":" You'r college Email ID has already registered"},status=status.HTTP_403_FORBIDDEN)
+        #Mail=727623BIT***@mcet.in
+        
+        # if(CollegeMail[12:20]!="@mcet.in"):
+        #     return JsonResponse({"register":"Enter the valid Email ID"},status=status.HTTP_401_UNAUTHORIZED)
+        # qs=User.objects.filter(username=CollegeMail) 
+        RollNum=CollegeMail[:12]
+        qs=ClassModel.objects.all()
+        flag=0
+        for i in qs:
+            if RollNum in i.rollNum:
+                flag=1
+                cc=i.CC #cc->empid
+                section=i.section
+                break
+        
+        if(flag==0):
+            return JsonResponse({"register":"Enter the valid Email ID"},status=status.HTTP_401_UNAUTHORIZED)
+        
         password=data.get("password")
         verify=data.get('confirmPassword')
         
@@ -89,8 +104,19 @@ class Register(views.APIView):
         user.set_password(password)
         user.save()
         #setting the username
-        RollNum=CollegeMail[:12]
-        student=StudentModel(User=user,Name=username,RollNum=RollNum)
+        
+        teacher=User.objects.filter(username=cc)
+        if not (teacher.exists()):
+            return JsonResponse({"register":"Teacher is not signup yet"},status=status.HTTP_400_BAD_REQUEST)
+        teacher=User.objects.get(username=cc)
+        teacherNameqs=TeacherModel.objects.filter(User=teacher)
+
+        if not teacherNameqs.exists():
+            return JsonResponse({"register":"Teacher is not signup yet"},status=status.HTTP_400_BAD_REQUEST)
+        teacherNameqs=TeacherModel.objects.get(User=teacher)
+        teacherName=teacherNameqs.Name
+
+        student=StudentModel(User=user,Name=username,RollNum=RollNum,CC=teacherName,Section=section)
         student.save()
         print(f"User Added({username})")
         return JsonResponse({'register':f"student account({RollNum}) successfully registered"},status=status.HTTP_200_OK)
@@ -403,7 +429,7 @@ class ProfileEditView(generics.RetrieveUpdateAPIView):
 
     queryset=StudentModel.objects.all()
     serializer_class=StudentSerializer
-    
+    parser_classes = (MultiPartParser, FormParser) 
 
     def get_object(self):
         user=self.request.user
@@ -424,12 +450,40 @@ class ProfileEditView(generics.RetrieveUpdateAPIView):
             return JsonResponse({"profile":"Not a vaild student account"},status=status.HTTP_401_UNAUTHORIZED)
         
         studentqs=StudentModel.objects.get(User=user)
-        student=StudentSerializer(studentqs)
+        student=StudentSerializer(studentqs).data
         # return super().get(request, *args, **kwargs)
 
-        return Response(student.data,status=status.HTTP_200_OK)
+        classqs=ClassModel.objects.filter(rollNum__contains = studentqs.RollNum)
+        if not classqs.exists():
+            return JsonResponse({"profile":"not a valid class"})
+        classqs=ClassModel.objects.get(rollNum__contains = studentqs.RollNum)
+        Mentor1=classqs.mentor1
+        Mentor2=classqs.mentor2
+        Mentor3=classqs.mentor3
+
+        mentor1=User.objects.filter(username=Mentor1)
+        mentor2=User.objects.filter(username=Mentor2)
+        mentor3=User.objects.filter(username=Mentor3)
+
+        if((not mentor1.exists()) or (not mentor2.exists()) or (not mentor3.exists())):
+            return JsonResponse({"profile":"not a valid mentor id"})
+        
+        mentor1=User.objects.get(username=Mentor1)
+        mentor2=User.objects.get(username=Mentor2)
+        mentor3=User.objects.get(username=Mentor3)
+
+        mentorName1=TeacherModel.objects.get(User=mentor1).Name
+        mentorName2=TeacherModel.objects.get(User=mentor2).Name
+        mentorName3=TeacherModel.objects.get(User=mentor3).Name
+
+        student["mentor1"]=mentorName1
+        student["mentor2"]=mentorName2
+        student["mentor3"]=mentorName3
+
+        return JsonResponse(student,status=status.HTTP_200_OK)
     
     def patch(self, request, *args, **kwargs):
+        
 
         user=self.request.user
 
@@ -438,6 +492,9 @@ class ProfileEditView(generics.RetrieveUpdateAPIView):
         
         studentqs=self.get_object()
         serialize=StudentSerializer(studentqs,data=request.data,partial=True)
+
+        if 'profilePic' not in request.FILES:
+            serialize.pop('profilePic', None)
 
         if(serialize.is_valid()):
             serialize.save()
@@ -466,4 +523,5 @@ class ProfileView(generics.ListAPIView):
         profileSerialize=StudentSerializer(profileqs).data
         return JsonResponse(profileSerialize,status=status.HTTP_200_OK)
         # return super().get(request, *args, **kwargs)
+    
 ProfileViewClass=ProfileView.as_view()
