@@ -16,20 +16,22 @@ from django.core.exceptions import ValidationError
 #     def __str__(self):
 #         return f"{self.Titile}-{self.Display }"
 
-# class Class(models.Model):
-#     Year=models.IntegerField()
-#     YearCode=models.IntegerField()
-#     Starting=models.IntegerField()
-#     Ending=models.IntegerField()
-#     Lateral=models.TextField(null=True)
-#     out=models.TextField(null=True)
+class ClassModel(models.Model):
+    Year=models.IntegerField()
+    Section=models.CharField(max_length=1)
+    RollNum=models.TextField()
+    #Assign the empid for cc,mentor for easy retrival instead of foreign key
+    CC=models.CharField(max_length=10)
+    Mentor1=models.CharField(max_length=10)
+    Mentor2=models.CharField(max_length=10,null=True)
+    Mentor3=models.CharField(max_length=10,null=True)
 
-#     def __str__(self):
-#         return f"{self.YearCode}"
+    def __str__(self):
+        return f"{self.Year}-{self.Section}-{self.CC}"
 
 
 class StudentModel(models.Model):
-    #CC,Mentor,
+    #batch,email,phone num,address
     User=models.ForeignKey(User,on_delete=models.CASCADE)
     Name=models.CharField(max_length=30,null=True)
     RollNum=models.CharField(max_length=15,null=True)
@@ -41,7 +43,13 @@ class StudentModel(models.Model):
     HackerRank=models.URLField(null=True)
     CC=models.CharField(max_length=30,null=True)
     Mentor=models.CharField(max_length=30,null=True)
-    CurrentArrear=models.IntegerField(null=True,default=0)
+    # CurrentArrear=models.IntegerField(null=True,default=0)
+    email=models.EmailField(null=True)
+    phoneNum=models.CharField(max_length=13,null=True)
+    bio=models.TextField(null=True)
+    profilePic=models.ImageField(upload_to="ProfilePic",null=True,blank=True)
+    batch=models.CharField(null=True,max_length=2)
+
 
     def __str__(self):
         return f"{self.User.username}-{self.Name}"
@@ -101,3 +109,13 @@ class BadgeModel(models.Model):
 
     def __str__(self):
         return f"{self.Title}-{self.Category}"
+
+class TeacherModel(models.Model):
+    User=models.ForeignKey(User,on_delete=models.CASCADE)
+    Name=models.CharField(max_length=30)
+    designatin=models.CharField(max_length=50)
+    mobileNo=models.CharField(max_length=15)
+    #empNo=models.CharField(max_length=7)
+
+    def __str__(self):
+        return f"{self.User.username}-{self.Name}"

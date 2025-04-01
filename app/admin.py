@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel
+from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel,ClassModel
 
 admin.site.register(StudentModel)
 
@@ -25,5 +25,8 @@ class BadgeAdmin(admin.ModelAdmin):
     list_filter=('Category',)
     list_display=('Title','Category','Count')
     
-
 admin.site.register(BadgeModel,BadgeAdmin)
+
+admin.site.register(TeacherModel)
+
+admin.site.register(ClassModel)

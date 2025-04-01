@@ -1,4 +1,4 @@
-#Avoid using the complex concept for later easy understanding  
+#Avoid using the complex concept for later easy understanding  and also avoid try catch for the later confunsion of others
 import json
 from datetime import datetime
 
@@ -14,7 +14,7 @@ from rest_framework import views
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel
+from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel
 from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializer,StudentSerializer,BadgeSerializer
 
 # Create your views here.
@@ -39,10 +39,12 @@ def count(count,step):
         return 0
     if(step==5):
         max=80
+        mul=2
     else:
         max=15
-    while(num<=count):
-        num*=2
+        num=3
+    while(num<=count):#10
+        num*=mul
         if(num>max):
             return max
     return int(num/2)
@@ -87,9 +89,39 @@ class Register(views.APIView):
         student=StudentModel(User=user,Name=username,RollNum=RollNum)
         student.save()
         print(f"User Added({username})")
-        return JsonResponse({'register':"Success"},status=status.HTTP_200_OK)
+        return JsonResponse({'register':f"student account({RollNum}) successfully registered"},status=status.HTTP_200_OK)
         
 RegisterClass=Register.as_view()
+
+class TeacherRegisterView(views.APIView):
+    permission_classes=[]
+    authentication_classes=[]
+
+    def post(self,request):
+        data=json.loads(request.body)
+        EmpId=data.get("empId")
+        
+        qs=User.objects.filter(username=EmpId)
+        if qs.exists():
+            return JsonResponse({"register":"The empid already exisit"},status=status.HTTP_400_BAD_REQUEST)
+        
+        password=data.get("password")
+        verify=data.get('confirmPassword')
+
+        if(password!=verify):
+            return JsonResponse({"register":"The password and conform password are not same"},status=status.HTTP_400_BAD_REQUEST)
+        
+        user=User(username=EmpId)
+        user.set_password(password)
+        user.save()
+
+        username=data.get("username")
+        teacher=TeacherModel(User=user,Name=username)
+        teacher.save()
+
+        return JsonResponse({"register":f"Teacher account({EmpId}) successfully register"},status=status.HTTP_201_CREATED)
+    
+TeacherRegisterClass=TeacherRegisterView.as_view()
 
 class LoginView(views.APIView):
     permission_classes=[]
@@ -114,24 +146,58 @@ class LoginView(views.APIView):
         else:
             return JsonResponse({"login": "Invalid Email or Password."},status=status.HTTP_401_UNAUTHORIZED)
         # user = authenticate(request, email=email, password=password)
-        if user:
-            if user.is_active:
-                login(request,user)
-                # Generate JWT tokens
-                refresh = RefreshToken.for_user(user)
-                access_token = str(refresh.access_token)
+        if user.is_active:
+            login(request,user)
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
 
-                return JsonResponse({
-                    "login": "success",
-                    "access_token": access_token,
-                    "refresh_token": str(refresh)
-                }, status=status.HTTP_200_OK)
-            else:
-                return JsonResponse({"login": "User account is inactive."},status=status.HTTP_403_FORBIDDEN)
+            return JsonResponse({
+                "login": "success",
+                "access_token": access_token,
+                "refresh_token": str(refresh)
+            }, status=status.HTTP_200_OK)
         else:
-            return JsonResponse({"login": "Invalid Email or Password."},status=status.HTTP_401_UNAUTHORIZED)
-
+            return JsonResponse({"login": "User account is inactive."},status=status.HTTP_403_FORBIDDEN)
+            
 LoginViewClass=LoginView.as_view()
+
+class TeacherLoginView(views.APIView):
+    permission_classes=[]
+    authentication_classes=[]
+
+    def post(self,request):
+        data=json.loads(request.body)
+        empID=data.get("empId")
+        password=data.get("password")
+
+        if not empID or not password:
+            return JsonResponse({"login":"please provied both empId and password"},status=status.HTTP_400_BAD_REQUEST)
+        
+        user=User.objects.filter(username=empID)
+
+        if(user.exists()):
+            user=User.objects.get(username=empID)
+            if not(check_password(password,user.password)):
+                return JsonResponse({"login": "Invalid empId or Password."},status=status.HTTP_404_NOT_FOUND)                
+        else:
+            return JsonResponse({"login": "Invalid empId or Password."},status=status.HTTP_401_UNAUTHORIZED)
+        
+        if user.is_active:
+            login(request,user)
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+
+            return JsonResponse({
+                "login": "success",
+                "access_token": access_token,
+                "refresh_token": str(refresh)
+            }, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse({"login": "User account is inactive."},status=status.HTTP_403_FORBIDDEN)
+
+TeacherLoginClass=TeacherLoginView.as_view()
 
 class AssosationView(generics.ListAPIView):
 
@@ -285,7 +351,7 @@ class DashbordView(generics.ListAPIView):
         serializer=BadgeSerializer(winnerBadgeqs)
         winnerBadge=serializer.data.get('Image')
         
-        return Response({"totalAcitivities":toatlCount,"cgpa":cgpa,"recentActivities":RecentActivity,"particpataionBadge":particpataionBadge,"winnerBadge":winnerBadge,"particpationCount":orginalParticpataionCount,"WinnerCount":originalWinnerCount},status=status.HTTP_200_OK)
+        return JsonResponse({"totalAcitivities":toatlCount,"cgpa":cgpa,"recentActivities":RecentActivity,"particpataionBadge":particpataionBadge,"winnerBadge":winnerBadge,"particpationCount":orginalParticpataionCount,"WinnerCount":originalWinnerCount},status=status.HTTP_200_OK)
 
 DashbordViewClass=DashbordView.as_view()
 
@@ -328,3 +394,72 @@ class ActivityView(generics.ListAPIView):
         # return super().get(request, *args, **kwargs)
 
 ActivityViewClass=ActivityView.as_view()
+
+class ProfileEditView(generics.RetrieveUpdateAPIView):
+
+    queryset=StudentModel.objects.all()
+    serializer_class=StudentSerializer
+    
+
+    def get_object(self):
+        user=self.request.user
+        try:
+            student=StudentModel.objects.get(User=user)
+            return student
+        except StudentModel.DoesNotExist:
+            return JsonResponse({"profile":"not the valid student account"},status=status.HTTP_404_NOT_FOUND)
+        
+    def get(self, request, *args, **kwargs):
+        user=self.request.user
+
+        if(not user.is_authenticated):
+            return JsonResponse({"profile":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
+
+        student=StudentModel.objects.filter(User=user)
+        if(not student.exists()):
+            return JsonResponse({"profile":"Not a vaild student account"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        studentqs=StudentModel.objects.get(User=user)
+        student=StudentSerializer(studentqs)
+        # return super().get(request, *args, **kwargs)
+
+        return Response(student.data,status=status.HTTP_200_OK)
+    
+    def patch(self, request, *args, **kwargs):
+
+        user=self.request.user
+
+        if not(user.is_authenticated):
+            return JsonResponse({"profile":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        studentqs=self.get_object()
+        serialize=StudentSerializer(studentqs,data=request.data,partial=True)
+
+        if(serialize.is_valid()):
+            serialize.save()
+            #return Response(serialize.data, status=status.HTTP_200_OK)
+            return JsonResponse({"Profile":f"Profile updated for {user.username}"},status=status.HTTP_202_ACCEPTED)
+        else:
+            return JsonResponse({"profile":"Not the valid data"},status=status.HTTP_406_NOT_ACCEPTABLE)
+    
+ProfileEditClass=ProfileEditView.as_view()
+
+class ProfileView(generics.ListAPIView):
+    queryset=StudentModel.objects.all()
+    serializer_class=StudentSerializer
+
+    def get(self, request, *args, **kwargs):
+        user=self.request.user
+
+        if not(user.is_authenticated):
+            return JsonResponse({"profile":"login required"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        profileqs=StudentModel.objects.filter(User=user)
+        if not profileqs.exists():
+            return JsonResponse({"profile":"Not valid student account"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        profileqs=StudentModel.objects.get(User=user)
+        profileSerialize=StudentSerializer(profileqs).data
+        return JsonResponse(profileSerialize,status=status.HTTP_200_OK)
+        # return super().get(request, *args, **kwargs)
+ProfileViewClass=ProfileView.as_view()
