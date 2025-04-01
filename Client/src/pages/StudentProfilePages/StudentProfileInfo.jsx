@@ -1,120 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Button, Image, Spinner, Alert } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Card, Row, Col, Button, Image, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { 
   FaEdit, FaUser, FaUniversity, FaUserTie, FaUsers, FaIdCard, 
-  FaEnvelope, FaPhone, FaGithub, FaCode, FaHackerrank 
+  FaEnvelope, FaPhone, FaGithub, FaCode, FaHackerrank, FaLinkedin,
+  FaQuoteLeft, FaQuoteRight, FaGraduationCap
 } from 'react-icons/fa';
+import { StudentSideBar } from "../../components/StudentProfileComponent/StudentSideBar"
 import axios from 'axios';
-import { StudentSideBar } from '../../components/StudentProfileComponent/StudentSideBar';
-
-// API endpoint
-const API_BASE_URL = 'https://api.example.com'; // Replace with your actual API base URL
-const PROFILE_ENDPOINT = '/api/profile';
 
 export const StudentProfileInfo = () => {
-  // State for student data
-  const [studentData, setStudentData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [name, setName] = useState("");
+  const [rollno, setRollno] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [dept, setDept] = useState("Information Technology");
+  const [college, setCollege] = useState("Dr. Mahalingam College og Engineering and Technology");
+  const [year, setYear] = useState("");
+  const [section, setSection] = useState("");
+  const [github, setGithub] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [hackerrank, setHackerrank] = useState("");
+  const [leetcode, setLeetcode] = useState("");
+  const [batch, setBatch] =  useState("");
+  const [mentor, setMentor] = useState("");
+  const [cc, setCc] = useState("");
+  const [bio, setBio] = useState("")
+  const [profilePic, setProfilePic] = useState("");
 
-  // Fetch profile data on component mount
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        // Fetch profile data
-        const profileResponse = await axios.get(`${API_BASE_URL}${PROFILE_ENDPOINT}`);
-        
-        // For demo purposes, if API is not available
-        if (!profileResponse.data) {
-          throw new Error("API not available, using sample data");
-        }
-        
-        setStudentData(profileResponse.data);
-        
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Failed to load profile data. Using sample data instead.");
-        
-        // Use sample data if API fails
-        const sampleData = {
-          name: "Dhanya",
-          department: "Information Technology",
-          section: "A",
-          collegeName: "Dr. MCET",
-          ccName: "Dr. Sarah Williams",
-          mentorName: "Prof. Michael Chen",
-          batch: "1",
-          rollNo: "727623bit001",
-          email: "dhanys@mail.com",
-          phone: "0000000000",
-          address: "road",
-          collegeEmail: "727623bit001@mcet.in",
-          githubProfile: "github.com/dhanya",
-          leetcodeProfile: "leetcode.com/dhanya",
-          hackerrankProfile: "hackerrank.com/dhanya",
-          profileImage: "https://via.placeholder.com/150"
-        };
-        
-        setStudentData(sampleData);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+
+
+  // Static student data (no backend connection)
+  // const studentData = {
+  //   name: "Dhany Shri",
+  //   department: "Information Technology",
+  //   section: "A",
+  //   collegeName: "Dr. Mahalingam College of Engineering and Technology",
+  //   ccName: "Summathi",
+  //   mentorName: "Summathi",
+  //   batch: "1",
+  //   rollNo: "727623bit001",
+  //   email: "727623bit001@mcet.in",
+  //   phone: "0000000000",
+  //   bio: "Second year IT student passionate about AI and machine learning. Experienced in web development and mobile app development. Looking for opportunities in software engineering.",
+  //   githubProfile: "github.com/dhaya",
+  //   leetcodeProfile: "leetcode.com/dhaya",
+  //   hackerrankProfile: "hackerrank.com/dhaya",
+  //   linkedinProfile: "linkedin.com/in/dhaya",
+  //   profileImage: "/About_IT.png"
+  // };
+
+  const studentData = async () =>{
+    const response = await axios.get("http://127.0.0.1:8000/api/profile/", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      },
+    });
+    console.log("server response:", response.data);
+    setName(response.data.Name);
+    setRollno(response.data.RollNum);
+    setEmail(response.data.email);
+    setPhone(response.data.phoneNum);
+    setSection(response.data.Section);
+    setBatch(response.data.batch);
+    setGithub(response.data.Github);
+    setLeetcode(response.data.Leetcode);
+    setLinkedin(response.data.Linkedin);
+    setHackerrank(response.data.HackerRank);
+    setCc(response.data.CC);
+    setMentor(response.data.Mentor);
+    setBio(response.data.bio);
+
+    const profilePicture = `http://127.0.0.1:8000/${response.data.profilePic}`;
+    setProfilePic(profilePicture);
     
-    fetchProfileData();
-  }, []);
+  }
+  useEffect(()=>{
+    studentData();
+  },[])
 
   // Render information field (label and value)
-  const InfoField = ({ icon, label, value }) => (
-    <Row className="mb-3">
+  const InfoField = ({ icon, label, value, link = false }) => (
+    <Row className="mb-3 align-items-center">
       <Col sm={4} className="text-muted">
         {icon} {label}
       </Col>
       <Col sm={8} className="fw-medium">
-        {value || "Not specified"}
+        {link && value ? (
+          <a href={`https://${value}`} target="_blank" rel="noopener noreferrer" className="text-decoration-none">
+            {value}
+          </a>
+        ) : (
+          value || "Not specified"
+        )}
       </Col>
     </Row>
   );
 
-  if (isLoading) {
-    return (
-      <div className="d-flex">
-        <StudentSideBar/>
-        <div className="flex-grow-1 p-4 d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
-          <div className="text-center">
-            <Spinner animation="border" variant="primary" />
-            <p className="mt-3">Loading profile information...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!studentData) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 p-4">
-          <Alert variant="danger">
-            Failed to load profile data. Please try again later.
-          </Alert>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="d-flex">
-      <StudentSideBar/>
+      <StudentSideBar />
       <div className="flex-grow-1 p-4">
         <div className="mb-4 d-flex justify-content-between align-items-center">
           <div>
             <h1 className="h3 fw-bold">Personal Information</h1>
-            <p className="text-muted">View your personal details</p>
+            <p className="text-muted">View your personal details and academic information</p>
           </div>
           <Link to="/student-profile/info/edit">
             <Button variant="primary">
@@ -123,156 +113,173 @@ export const StudentProfileInfo = () => {
           </Link>
         </div>
 
-        {error && (
-          <Alert variant="warning" className="mb-4">
-            {error}
-          </Alert>
-        )}
-
         <Row>
           <Col lg={4} className="mb-4">
-            <Card>
+            <Card className="border-0 shadow-sm">
               <Card.Body className="text-center">
-                <div className="mb-3">
-                  <Image 
-                    src={studentData.profileImage || "https://via.placeholder.com/150"} 
-                    roundedCircle 
-                    width={120} 
-                    height={120} 
-                    className="border"
-                  />
+                <div className="mb-3 position-relative">
+                  <div className="position-relative d-inline-block">
+                    <Image 
+                      src={profilePic || "/placeholder.svg"} 
+                      roundedCircle 
+                      width={130} 
+                      height={130} 
+                      className="border p-1 bg-light"
+                      style={{ objectFit: 'cover' }}
+                    />
+                    <div className="position-absolute bottom-0 end-0">
+                      <FaGraduationCap color="blue" size={16} />
+                    </div>
+                  </div>
                 </div>
-                <h4 className="mb-1">{studentData.name}</h4>
-                <p className="text-muted mb-3">{studentData.rollNo}</p>
-                <p className="mb-2">
-                  <FaUniversity className="me-2" />
-                  {studentData.department}
+                <h4 className="mb-1">{name}</h4>
+                <p className="text-muted mb-2">{rollno}</p>
+                <p className="mb-2 badge bg-light text-dark border">
+                  <FaUniversity className="me-1" />
+                  {dept}
                 </p>
                 <p className="mb-3">
-                  <FaUsers className="me-2" />
-                  Section {studentData.section}, Batch {studentData.batch}
+                  <span className="badge bg-primary me-2">Section {section}</span>
+                  <span className="badge bg-secondary">Batch {batch}</span>
                 </p>
               </Card.Body>
             </Card>
 
-            <Card className="mt-4">
-              <Card.Header className="bg-white">
+            <Card className="mt-4 border-0 shadow-sm">
+              <Card.Header className="bg-white border-bottom-0 pt-4">
                 <Card.Title className="h6 mb-0">Contact Information</Card.Title>
               </Card.Header>
-              <Card.Body>
-                <p className="mb-2">
-                  <FaEnvelope className="me-2 text-muted" />
-                  {studentData.email}
-                </p>
-                <p className="mb-2">
-                  <FaEnvelope className="me-2 text-muted" />
-                  <span className="text-muted">College: </span>
-                  {studentData.collegeEmail}
-                </p>
-                <p className="mb-2">
-                  <FaPhone className="me-2 text-muted" />
-                  {studentData.phone}
-                </p>
-                <p className="mb-0">
-                  <FaIdCard className="me-2 text-muted" />
-                  {studentData.address}
-                </p>
+              <Card.Body className="pt-0">
+                <div className="d-flex align-items-center mb-3 p-2 bg-light rounded">
+                  <FaEnvelope className="me-3 text-primary" />
+                  <div>
+                    <div className="small text-muted">College Email</div>
+                    <div>{email}</div>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center p-2 bg-light rounded">
+                  <FaPhone className="me-3 text-primary" />
+                  <div>
+                    <div className="small text-muted">Phone</div>
+                    <div>{phone}</div>
+                  </div>
+                </div>
               </Card.Body>
             </Card>
 
-            <Card className="mt-4">
-              <Card.Header className="bg-white">
+            <Card className="mt-4 border-0 shadow-sm">
+              <Card.Header className="bg-white border-bottom-0 pt-4">
                 <Card.Title className="h6 mb-0">Social Profiles</Card.Title>
               </Card.Header>
-              <Card.Body>
-                <p className="mb-2">
-                  <FaGithub className="me-2 text-muted" />
-                  <a href={`https://${studentData.githubProfile}`} target="_blank" rel="noopener noreferrer">
-                    {studentData.githubProfile || "Not linked"}
-                  </a>
-                </p>
-                <p className="mb-2">
-                  <FaCode className="me-2 text-muted" />
-                  <a href={`https://${studentData.leetcodeProfile}`} target="_blank" rel="noopener noreferrer">
-                    {studentData.leetcodeProfile || "Not linked"}
-                  </a>
-                </p>
-                <p className="mb-0">
-                  <FaHackerrank className="me-2 text-muted" />
-                  <a href={`https://${studentData.hackerrankProfile}`} target="_blank" rel="noopener noreferrer">
-                    {studentData.hackerrankProfile || "Not linked"}
-                  </a>
-                </p>
+              <Card.Body className="pt-0">
+                <a href={github} target="_blank" rel="noopener noreferrer" className="d-flex align-items-center mb-3 p-2 bg-light rounded text-decoration-none text-dark">
+                  <FaGithub className="me-3 text-dark" />
+                  <div>
+                    <div className="small text-muted">GitHub</div>
+                    
+                  </div>
+                </a>
+                <a href={linkedin} target="_blank" rel="noopener noreferrer" className="d-flex align-items-center mb-3 p-2 bg-light rounded text-decoration-none text-dark">
+                  <FaLinkedin className="me-3 text-primary" />
+                  <div>
+                    <div className="small text-muted">LinkedIn</div>
+                    <div>{studentData.linkedinProfile}</div>
+                  </div>
+                </a>
+                <a href={leetcode} target="_blank" rel="noopener noreferrer" className="d-flex align-items-center mb-3 p-2 bg-light rounded text-decoration-none text-dark">
+                  <FaCode className="me-3 text-warning" />
+                  <div>
+                    <div className="small text-muted">LeetCode</div>
+                    <div>{studentData.leetcodeProfile}</div>
+                  </div>
+                </a>
+                <a href={hackerrank} target="_blank" rel="noopener noreferrer" className="d-flex align-items-center p-2 bg-light rounded text-decoration-none text-dark">
+                  <FaHackerrank className="me-3 text-success" />
+                  <div>
+                    <div className="small text-muted">HackerRank</div>
+                    <div>{studentData.hackerrankProfile}</div>
+                  </div>
+                </a>
               </Card.Body>
             </Card>
           </Col>
 
           <Col lg={8}>
-            <Card>
-              <Card.Header className="bg-white">
+            <Card className="mb-4 border-0 shadow-sm">
+              <Card.Header className="bg-white border-bottom-0 pt-4">
+                <Card.Title className="h5 mb-0">About Me</Card.Title>
+              </Card.Header>
+              <Card.Body className="pt-2">
+                <div className="position-relative p-4 bg-light rounded">
+                  <FaQuoteLeft className="position-absolute text-primary opacity-25" style={{ top: '10px', left: '10px', fontSize: '1.5rem' }} />
+                  <p className="mb-0 px-4">{bio}</p>
+                  <FaQuoteRight className="position-absolute text-primary opacity-25" style={{ bottom: '10px', right: '10px', fontSize: '1.5rem' }} />
+                </div>
+              </Card.Body>
+            </Card>
+            
+            <Card className="border-0 shadow-sm">
+              <Card.Header className="bg-white border-bottom-0 pt-4">
                 <Card.Title className="h5 mb-0">Academic Details</Card.Title>
               </Card.Header>
-              <Card.Body>
-                <h6 className="border-bottom pb-2 mb-3">Student Information</h6>
-                <InfoField 
-                  icon={<FaUser className="me-2" />}
-                  label="Full Name"
-                  value={studentData.name}
-                />
-                <InfoField 
-                  icon={<FaIdCard className="me-2" />}
-                  label="Roll Number"
-                  value={studentData.rollNo}
-                />
-                <InfoField 
-                  icon={<FaUniversity className="me-2" />}
-                  label="Department"
-                  value={studentData.department}
-                />
-                <InfoField 
-                  icon={<FaUsers className="me-2" />}
-                  label="Section"
-                  value={studentData.section}
-                />
-                <InfoField 
-                  icon={<FaUsers className="me-2" />}
-                  label="Batch"
-                  value={`Batch ${studentData.batch}`}
-                />
+              <Card.Body className="pt-2">
+                <div className="p-3 mb-4 bg-light rounded">
+                  <h6 className="border-bottom pb-2 mb-3 d-flex align-items-center">
+                    <FaUser className="me-2 text-primary" /> Student Information
+                  </h6>
+                  <Row className="mb-2">
+                    <Col sm={6}>
+                      <div className="mb-3">
+                        <div className="small text-muted">Full Name</div>
+                        <div className="fw-medium">{name}</div>
+                      </div>
+                    </Col>
+                    <Col sm={6}>
+                      <div className="mb-3">
+                        <div className="small text-muted">Roll Number</div>
+                        <div className="fw-medium">{rollno}</div>
+                      </div>
+                    </Col>
+                    <Col sm={6}>
+                      <div className="mb-3">
+                        <div className="small text-muted">Department</div>
+                        <div className="fw-medium">{dept}</div>
+                      </div>
+                    </Col>
+                    <Col sm={6}>
+                      <div className="mb-3">
+                        <div className="small text-muted">Section & Batch</div>
+                        <div className="fw-medium">Section {section}, Batch {batch}</div>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
                 
-                <h6 className="border-bottom pb-2 mb-3 mt-4">Institution Information</h6>
-                <InfoField 
-                  icon={<FaUniversity className="me-2" />}
-                  label="College Name"
-                  value={studentData.collegeName}
-                />
-                <InfoField 
-                  icon={<FaUserTie className="me-2" />}
-                  label="Class Coordinator"
-                  value={studentData.ccName}
-                />
-                <InfoField 
-                  icon={<FaUserTie className="me-2" />}
-                  label="Mentor"
-                  value={studentData.mentorName}
-                />
-                
-                <h6 className="border-bottom pb-2 mb-3 mt-4">Social Profiles</h6>
-                <InfoField 
-                  icon={<FaGithub className="me-2" />}
-                  label="GitHub Profile"
-                  value={studentData.githubProfile}
-                />
-                <InfoField 
-                  icon={<FaCode className="me-2" />}
-                  label="LeetCode Profile"
-                  value={studentData.leetcodeProfile}
-                />
-                <InfoField 
-                  icon={<FaHackerrank className="me-2" />}
-                  label="HackerRank Profile"
-                  value={studentData.hackerrankProfile}
-                />
+                <div className="p-3 bg-light rounded">
+                  <h6 className="border-bottom pb-2 mb-3 d-flex align-items-center">
+                    <FaUniversity className="me-2 text-primary" /> Institution Information
+                  </h6>
+                  <Row>
+                    <Col sm={6}>
+                      <div className="mb-3">
+                        <div className="small text-muted">College Name</div>
+                        <div className="fw-medium">{college}</div>
+                      </div>
+                    </Col>
+                    <Col sm={6}>
+                      <div className="mb-3">
+                        <div className="small text-muted">Class Coordinator</div>
+                        <div className="fw-medium">{cc}</div>
+                      </div>
+                    </Col>
+                    <Col sm={6}>
+                      <div>
+                        <div className="small text-muted">Mentor</div>
+                        <div className="fw-medium">{mentor}</div>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
               </Card.Body>
             </Card>
           </Col>

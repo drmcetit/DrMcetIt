@@ -28,9 +28,9 @@ export const About = () => {
                 <Card.Text className="text-muted">
                   Learn about our history, vision, mission, and faculty members.
                 </Card.Text>
-                <Link to="/about" className="text-primary" style={{textDecoration:"none"}}>
+                <a href="/about" className="text-primary" style={{textDecoration:"none"}}>
                   Learn more →
-                </Link>
+                </a>
               </Card.Body>
             </Card>
           </Col>
@@ -79,9 +79,9 @@ export const About = () => {
                 <Card.Text className="text-muted">
                   Join our student clubs, events, and professional associations.
                 </Card.Text>
-                <Link to="/association" className="text-primary" style={{textDecoration:"none"}}>
+                <a href="/association" className="text-primary" style={{textDecoration:"none"}}>
                   Learn more →
-                </Link>
+                </a>
               </Card.Body>
             </Card>
           </Col>

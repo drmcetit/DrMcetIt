@@ -14,6 +14,8 @@ import { useEffect, useState } from 'react';
 import { StudentProfileViewParcipated } from './pages/StudentProfilePages/StudentProfileViewParcipated';
 import { StudentProfileInfo } from './pages/StudentProfilePages/StudentProfileInfo';
 import { StudentEditProfile } from './pages/StudentProfilePages/StudentEditProfile';
+import { About } from './pages/About';
+import { Association } from './pages/Association';
 
 function App() {
   const [profileDashboard, setProfileDashboard] = useState("/student-login")
@@ -40,6 +42,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={ [<Navbar/>, <Home/>] } />
+        <Route path="/about" element={ [<Navbar/>, <About/> ] } />
+        <Route path="/association" element={ [<Navbar/>, <Association/> ] } />
         <Route path="/student-login" element={ <Login/> } />
         <Route path="/student-signup" element={ <Signup/> } />
         <Route path={profileDashboard} element={ <StudentProfileDashboard/> } />

@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef } from "react"
-import { Card, Row, Col, Button, Form, Image, Spinner, Alert } from "react-bootstrap"
+"use client"
+
+import { useState, useRef, useEffect } from "react"
+import { Card, Row, Col, Button, Form, Image } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"
 import {
   FaUser,
@@ -13,301 +15,217 @@ import {
   FaCode,
   FaHackerrank,
   FaCamera,
+  FaLinkedin,
 } from "react-icons/fa"
-import axios from "axios"
 import { StudentSideBar } from "../../components/StudentProfileComponent/StudentSideBar"
-
-// API endpoints
-const API_BASE_URL = "https://api.example.com" // Replace with your actual API base URL
-const PROFILE_ENDPOINT = "/api/profile"
-const SECTIONS_ENDPOINT = "/api/sections"
-const BATCHES_ENDPOINT = "/api/batches"
-const MENTORS_ENDPOINT = "/api/mentors"
-const CCS_ENDPOINT = "/api/class-coordinators"
-const UPLOAD_ENDPOINT = "/api/upload-profile-image"
+import axios from "axios"
 
 export const StudentEditProfile = () => {
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
 
-  // State for form data
+  const Sections = [
+    { id: 1, name: "A" },
+    { id: 2, name: "B" },
+    { id: 3, name: "C" },
+  ]
+
+  const batches = [
+    { id: 1, name: "Batch 1" },
+    { id: 2, name: "Batch 2" },
+    { id: 3, name: "Batch 3" },
+  ]
+
+
+
+
+
   const [formData, setFormData] = useState({
-    name: "",
-    department: "",
-    section: "",
-    collegeName: "",
-    ccName: "",
-    mentorName: "",
+    Name: "",
+    department: "Information Technology",
+    Section: "",
+    collegeName: "Dr. Mahalingam College of Engineering and Technology",
+    CC: "",
+    Mentor: "",
     batch: "",
-    rollNo: "",
+    RollNum: "",
     email: "",
-    phone: "",
-    address: "",
-    collegeEmail: "",
-    githubProfile: "",
-    leetcodeProfile: "",
-    hackerrankProfile: "",
-    profileImage: "",
-  })
+    phoneNum: "",
+    bio: "",
+    Github: "",
+    Leetcode: "",
+    HackerRank: "",
+    Linkedin: "",
+    profilePic: "", // Stores the existing image URL
+  });
 
-  // State for dropdown options
-  const [sections, setSections] = useState([])
-  const [batches, setBatches] = useState([])
-  const [mentors, setMentors] = useState([])
-  const [classCoordinators, setClassCoordinators] = useState([])
+  const [mentor1, setMentor1] = useState("")
+  const [mentor2, setMentor2] = useState("")
+  const [mentor3, setMentor3] = useState("")
 
-  // UI states
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState(null)
-  const [uploadError, setUploadError] = useState(null)
-  const [previewImage, setPreviewImage] = useState(null)
-  const [imageFile, setImageFile] = useState(null)
-  const [isUploading, setIsUploading] = useState(false)
-
-  // Fetch profile data and dropdown options on component mount
+  const mentors = [
+    { id: 1, name: mentor1 },
+    { id: 2, name: mentor2 },
+    { id: 3, name: mentor3 },
+  ]
+  
+  const [profilePic, setProfilePic] = useState(null); // Stores the new image file
+  
+  // Fetch existing profile data
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      setError(null)
-
+    const profileInfo = async () => {
       try {
-        // Fetch profile data
-        const profileResponse = await axios.get(`${API_BASE_URL}${PROFILE_ENDPOINT}`)
-
-        // For demo purposes, if API is not available
-        if (!profileResponse.data) {
-          throw new Error("API not available, using sample data")
-        }
-
-        setFormData(profileResponse.data)
-        setPreviewImage(profileResponse.data.profileImage)
-
-        // Fetch dropdown options
-        const [sectionsRes, batchesRes, mentorsRes, ccsRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}${SECTIONS_ENDPOINT}`),
-          axios.get(`${API_BASE_URL}${BATCHES_ENDPOINT}`),
-          axios.get(`${API_BASE_URL}${MENTORS_ENDPOINT}`),
-          axios.get(`${API_BASE_URL}${CCS_ENDPOINT}`),
-        ])
-
-        setSections(sectionsRes.data || [])
-        setBatches(batchesRes.data || [])
-        setMentors(mentorsRes.data || [])
-        setClassCoordinators(ccsRes.data || [])
-      } catch (err) {
-        console.error("Error fetching data:", err)
-        setError("Failed to load profile data. Using sample data instead.")
-
-        // Use sample data if API fails
-        const sampleData = {
-          name: "Alex Johnson",
-          department: "Computer Science Engineering",
-          section: "A",
-          collegeName: "University Engineering College",
-          ccName: "Dr. Sarah Williams",
-          mentorName: "Prof. Michael Chen",
-          batch: "1",
-          rollNo: "CSE2001",
-          email: "alex.johnson@example.com",
-          phone: "+1 (555) 123-4567",
-          address: "123 Campus Drive, University Town, UT 12345",
-          collegeEmail: "alex.j2001@college.edu",
-          githubProfile: "github.com/alexj2001",
-          leetcodeProfile: "leetcode.com/alexj2001",
-          hackerrankProfile: "hackerrank.com/alexj2001",
-          profileImage: "https://via.placeholder.com/150",
-        }
-
-        setFormData(sampleData)
-        setPreviewImage(sampleData.profileImage)
-
-        // Sample dropdown options
-        setSections([
-          { id: 1, name: "A" },
-          { id: 2, name: "B" },
-          { id: 3, name: "C" },
-        ])
-
-        setBatches([
-          { id: 1, name: "Batch 1" },
-          { id: 2, name: "Batch 2" },
-        ])
-
-        setMentors([
-          { id: 1, name: "Prof. Michael Chen" },
-          { id: 2, name: "Dr. Lisa Wong" },
-          { id: 3, name: "Prof. James Smith" },
-        ])
-
-        setClassCoordinators([
-          { id: 1, name: "Dr. Sarah Williams" },
-          { id: 2, name: "Prof. Robert Johnson" },
-          { id: 3, name: "Dr. Emily Davis" },
-        ])
-      } finally {
-        setIsLoading(false)
+        const response = await axios.get("http://127.0.0.1:8000/api/profile/edit/", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        });
+  
+        console.log("hi",response.data);
+        setFormData({
+          ...response.data,
+          profilePic: response.data.profilePic
+            ? `http://127.0.0.1:8000/${response.data.profilePic}`
+            : "/placeholder.svg",
+        });
+        setMentor1(response.data.mentor1)
+        setMentor2(response.data.mentor2)
+        setMentor3(response.data.mentor3)
+      } catch (error) {
+        console.error("Error fetching profile data:", error.response?.data || error);
       }
-    }
-
-    fetchData()
-  }, [])
-
+    };
+  
+    profileInfo();
+  }, []);
+  
+  // Handle form input changes
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData({
-      ...formData,
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
-    })
-  }
-
+    }));
+  };
+  
+  // Open file input
   const handleImageClick = () => {
-    fileInputRef.current.click()
-  }
-
+    fileInputRef.current.click();
+  };
+  
+  // Handle profile picture selection
   const handleImageChange = (e) => {
-    setUploadError(null)
-    const file = e.target.files[0]
-
-    if (!file) return
-
-    // Validate file type
-    const validTypes = ["image/jpeg", "image/png", "image/gif"]
-    if (!validTypes.includes(file.type)) {
-      setUploadError("Please select a valid image file (JPEG, PNG, or GIF)")
-      return
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setUploadError("Image size should be less than 5MB")
-      return
-    }
-
-    setImageFile(file)
-
-    // Create a preview
-    const reader = new FileReader()
+    const file = e.target.files[0];
+    if (!file) return;
+  
+    setProfilePic(file); // Store new file for submission
+  
+    // Preview the selected image
+    const reader = new FileReader();
     reader.onloadend = () => {
-      setPreviewImage(reader.result)
-    }
-    reader.readAsDataURL(file)
-  }
-
-  const uploadImage = async () => {
-    if (!imageFile) return null
-
-    setIsUploading(true)
-    setUploadError(null)
-
-    try {
-      const formData = new FormData()
-      formData.append("profileImage", imageFile)
-
-      const response = await axios.post(`${API_BASE_URL}${UPLOAD_ENDPOINT}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-
-      // Return the URL of the uploaded image
-      return response.data.imageUrl
-    } catch (err) {
-      console.error("Error uploading image:", err)
-      setUploadError("Failed to upload image. Please try again.")
-
-      // For demo purposes, return the preview URL
-      return previewImage
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
+      setFormData((prevData) => ({
+        ...prevData,
+        profilePic: reader.result,
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+  
+  // Get CSRF token from cookies
+  const getCSRFToken = () => {
+    return document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("csrftoken="))
+      ?.split("=")[1];
+  };
+  
+  // Submit the form data
   const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    setIsSaving(true)
-    setError(null)
-
-    try {
-      // Upload image if a new one was selected
-      let profileImageUrl = formData.profileImage
-      if (imageFile) {
-        profileImageUrl = await uploadImage()
-        if (!profileImageUrl) {
-          throw new Error("Failed to upload profile image")
-        }
-      }
-
-      // Prepare updated profile data
-      const updatedProfile = {
-        ...formData,
-        profileImage: profileImageUrl,
-      }
-
-      // Send updated profile data to the server
-      await axios.put(`${API_BASE_URL}${PROFILE_ENDPOINT}`, updatedProfile)
-
-      // Navigate back to profile page
-      navigate("/profile/personal")
-    } catch (err) {
-      console.error("Error saving profile:", err)
-      setError("Failed to save profile changes. Please try again.")
-
-      // For demo purposes, still navigate back
-      setTimeout(() => {
-        navigate("/profile/personal")
-      }, 3000)
-    } finally {
-      setIsSaving(false)
+    e.preventDefault();
+    const csrfToken = getCSRFToken();
+  
+    if (!csrfToken) {
+      alert("CSRF token missing. Please refresh the page or check login status.");
+      return;
     }
-  }
-
+  
+    const formDataToSend = new FormData();
+      formDataToSend.append("Name", formData.Name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("Section",formData.Section);
+      formDataToSend.append("CC",formData.CC);
+      formDataToSend.append("Mentor", formData.Mentor);
+      formDataToSend.append("batch", formData.batch);
+      formDataToSend.append("phoneNum", formData.phoneNum);
+      formDataToSend.append("bio", formData.bio);
+      formDataToSend.append("Github", formData.Github);
+      formDataToSend.append("Linkedin", formData.Linkedin);
+      formDataToSend.append("Leetcode", formData.Leetcode);
+      formDataToSend.append("HackerRank", formData.HackerRank);
+  
+    // If a new profile picture is selected, append it
+    if (profilePic) {
+      formDataToSend.append("profilePic", profilePic);
+    } else {
+      // If no new image is selected, retain the existing image URL
+      formDataToSend.append("profilePic", formData.profilePic);
+    }
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/profile/edit/", {
+        method: "PATCH",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: formDataToSend, // Don't set Content-Type manually for FormData
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to update profile. Status: ${response.status}`);
+      }
+  
+      alert("Profile updated successfully!");
+      navigate("/student-profile/info/edit");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Failed to update profile.");
+    }
+  };
+  
+  // Handle cancel button
   const handleCancel = () => {
-    navigate("/profile/personal")
-  }
+    navigate("/student-profile/info/edit");
+  };
 
-  if (isLoading) {
-    return (
-      <div className="d-flex">
-        <StudentSideBar/>
-        <div className="flex-grow-1 p-4 d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
-          <div className="text-center">
-            <Spinner animation="border" variant="primary" />
-            <p className="mt-3">Loading profile information...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+
+  
+  
+
+
+
 
   return (
     <div className="d-flex">
-      <StudentSideBar/>
+      <StudentSideBar />
       <div className="flex-grow-1 p-4">
         <div className="mb-4">
           <h1 className="h3 fw-bold">Edit Profile</h1>
           <p className="text-muted">Update your personal information</p>
         </div>
 
-        {error && (
-          <Alert variant="danger" className="mb-4">
-            {error}
-          </Alert>
-        )}
-
         <Form onSubmit={handleSubmit}>
           <Row>
             <Col lg={4} className="mb-4">
-              <Card>
+              <Card className="border-0 shadow-sm">
                 <Card.Body className="text-center">
-                  <div className="position-relative mb-4 d-inline-block">
+                  {/* <div className="position-relative mb-4 d-inline-block">
                     <Image
-                      src={previewImage || "https://via.placeholder.com/150"}
+                      src={formData.profilePic || "/placeholder.svg"}
                       roundedCircle
                       width={150}
                       height={150}
-                      className="border"
+                      className="border p-1 bg-light"
                       style={{ objectFit: "cover" }}
                     />
                     <div
@@ -324,13 +242,46 @@ export const StudentEditProfile = () => {
                       accept="image/*"
                       onChange={handleImageChange}
                     />
-                  </div>
+                  </div> */}
 
-                  {uploadError && (
-                    <Alert variant="danger" className="mt-2 p-2 small">
-                      {uploadError}
-                    </Alert>
-                  )}
+                  <div className="position-relative mb-4 d-inline-block">
+                        <input
+                          type="image"
+                          src={
+                            profilePic instanceof File
+                              ? URL.createObjectURL(profilePic)
+                              : formData.profilePic || "/placeholder.svg"
+                          }
+                          width={150}
+                          height={150}
+                          className="border p-1 bg-light rounded-circle"
+                          style={{ objectFit: "cover" }}
+                          alt="Profile"
+                          onClick={(e) => {
+                            e.preventDefault(); // Prevent form submission
+                            fileInputRef.current.click();
+                          }}
+                        />
+                        <div
+                          className="position-absolute bottom-0 end-0 bg-primary rounded-circle p-2"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => fileInputRef.current.click()}
+                        >
+                          <FaCamera color="white" />
+                        </div>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          className="d-none"
+                          accept="image/*"
+                          onChange={(e) => {
+                            if (e.target.files.length > 0) {
+                              setProfilePic(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
 
                   <p className="text-muted small">
                     Click on the camera icon to upload a new profile picture.
@@ -340,19 +291,19 @@ export const StudentEditProfile = () => {
                 </Card.Body>
               </Card>
 
-              <Card className="mt-4">
-                <Card.Header className="bg-white">
+              <Card className="mt-4 border-0 shadow-sm">
+                <Card.Header className="bg-white border-bottom-0 pt-4">
                   <Card.Title className="h6 mb-0">Social Profiles</Card.Title>
                 </Card.Header>
-                <Card.Body>
+                <Card.Body className="pt-0">
                   <Form.Group className="mb-3">
                     <Form.Label className="d-flex align-items-center">
                       <FaGithub className="me-2" /> GitHub Profile
                     </Form.Label>
                     <Form.Control
                       type="text"
-                      name="githubProfile"
-                      value={formData.githubProfile || ""}
+                      name="Github"
+                      value={formData.Github}
                       onChange={handleChange}
                       placeholder="github.com/username"
                     />
@@ -361,12 +312,26 @@ export const StudentEditProfile = () => {
 
                   <Form.Group className="mb-3">
                     <Form.Label className="d-flex align-items-center">
+                      <FaLinkedin className="me-2" /> LinkedIn Profile
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="Linkedin"
+                      value={formData.Linkedin}
+                      onChange={handleChange}
+                      placeholder="linkedin.com/in/username"
+                    />
+                    <Form.Text className="text-muted">Enter your LinkedIn username or profile URL</Form.Text>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Label className="d-flex align-items-center">
                       <FaCode className="me-2" /> LeetCode Profile
                     </Form.Label>
                     <Form.Control
                       type="text"
-                      name="leetcodeProfile"
-                      value={formData.leetcodeProfile || ""}
+                      name="Leetcode"
+                      value={formData.Leetcode}
                       onChange={handleChange}
                       placeholder="leetcode.com/username"
                     />
@@ -379,8 +344,8 @@ export const StudentEditProfile = () => {
                     </Form.Label>
                     <Form.Control
                       type="text"
-                      name="hackerrankProfile"
-                      value={formData.hackerrankProfile || ""}
+                      name="HackerRank"
+                      value={formData.HackerRank}
                       onChange={handleChange}
                       placeholder="hackerrank.com/username"
                     />
@@ -391,24 +356,37 @@ export const StudentEditProfile = () => {
             </Col>
 
             <Col lg={8}>
-              <Card className="mb-4">
-                <Card.Header className="bg-white">
+              <Card className="mb-4 border-0 shadow-sm">
+                <Card.Header className="bg-white border-bottom-0 pt-4">
+                  <Card.Title className="h5 mb-0">About Me</Card.Title>
+                </Card.Header>
+                <Card.Body className="pt-2">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Bio</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={4}
+                      name="bio"
+                      value={formData.bio}
+                      onChange={handleChange}
+                      placeholder="Tell us about yourself, your skills, interests, and goals..."
+                    />
+                  </Form.Group>
+                </Card.Body>
+              </Card>
+
+              <Card className="mb-4 border-0 shadow-sm">
+                <Card.Header className="bg-white border-bottom-0 pt-4">
                   <Card.Title className="h5 mb-0">Personal Information</Card.Title>
                 </Card.Header>
-                <Card.Body>
+                <Card.Body className="pt-2">
                   <Row>
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label className="d-flex align-items-center">
                           <FaUser className="me-2" /> Full Name
                         </Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="name"
-                          value={formData.name || ""}
-                          onChange={handleChange}
-                          required
-                        />
+                        <Form.Control type="text" name="Name" value={formData.Name} onChange={handleChange} required />
                       </Form.Group>
                     </Col>
                     <Col md={6}>
@@ -418,10 +396,10 @@ export const StudentEditProfile = () => {
                         </Form.Label>
                         <Form.Control
                           type="text"
-                          name="rollNo"
-                          value={formData.rollNo || ""}
+                          name="RollNum"
+                          value={formData.RollNum}
                           onChange={handleChange}
-                          required
+                          readOnly
                         />
                       </Form.Group>
                     </Col>
@@ -436,9 +414,9 @@ export const StudentEditProfile = () => {
                         <Form.Control
                           type="text"
                           name="department"
-                          value={formData.department || ""}
+                          value={formData.department}
                           onChange={handleChange}
-                          required
+                          readOnly
                         />
                       </Form.Group>
                     </Col>
@@ -447,11 +425,11 @@ export const StudentEditProfile = () => {
                         <Form.Label className="d-flex align-items-center">
                           <FaUsers className="me-2" /> Section
                         </Form.Label>
-                        <Form.Select name="section" value={formData.section || ""} onChange={handleChange} required>
+                        <Form.Select name="Section" value={formData.Section} onChange={handleChange} required>
                           <option value="">Select Section</option>
-                          {sections.map((section) => (
-                            <option key={section.id} value={section.name}>
-                              {section.name}
+                          {Sections.map((Section) => (
+                            <option key={Section.id} value={Section.name}>
+                              {Section.name}
                             </option>
                           ))}
                         </Form.Select>
@@ -465,7 +443,7 @@ export const StudentEditProfile = () => {
                         <Form.Label className="d-flex align-items-center">
                           <FaUsers className="me-2" /> Batch
                         </Form.Label>
-                        <Form.Select name="batch" value={formData.batch || ""} onChange={handleChange} required>
+                        <Form.Select name="batch" value={formData.batch} onChange={handleChange} required>
                           <option value="">Select Batch</option>
                           {batches.map((batch) => (
                             <option key={batch.id} value={batch.name.replace("Batch ", "")}>
@@ -483,9 +461,9 @@ export const StudentEditProfile = () => {
                         <Form.Control
                           type="text"
                           name="collegeName"
-                          value={formData.collegeName || ""}
+                          value={formData.collegeName}
                           onChange={handleChange}
-                          required
+                          readOnly
                         />
                       </Form.Group>
                     </Col>
@@ -497,13 +475,8 @@ export const StudentEditProfile = () => {
                         <Form.Label className="d-flex align-items-center">
                           <FaUserTie className="me-2" /> Class Coordinator
                         </Form.Label>
-                        <Form.Select name="ccName" value={formData.ccName || ""} onChange={handleChange} required>
-                          <option value="">Select Class Coordinator</option>
-                          {classCoordinators.map((cc) => (
-                            <option key={cc.id} value={cc.name}>
-                              {cc.name}
-                            </option>
-                          ))}
+                        <Form.Select name="CC" value={formData.CC} onChange={handleChange} readOnly>
+                          <option value="">{formData.CC}</option>
                         </Form.Select>
                       </Form.Group>
                     </Col>
@@ -512,12 +485,7 @@ export const StudentEditProfile = () => {
                         <Form.Label className="d-flex align-items-center">
                           <FaUserTie className="me-2" /> Mentor
                         </Form.Label>
-                        <Form.Select
-                          name="mentorName"
-                          value={formData.mentorName || ""}
-                          onChange={handleChange}
-                          required
-                        >
+                        <Form.Select name="Mentor" value={formData.Mentor} onChange={handleChange} required>
                           <option value="">Select Mentor</option>
                           {mentors.map((mentor) => (
                             <option key={mentor.id} value={mentor.name}>
@@ -531,26 +499,12 @@ export const StudentEditProfile = () => {
                 </Card.Body>
               </Card>
 
-              <Card className="mb-4">
-                <Card.Header className="bg-white">
+              <Card className="mb-4 border-0 shadow-sm">
+                <Card.Header className="bg-white border-bottom-0 pt-4">
                   <Card.Title className="h5 mb-0">Contact Information</Card.Title>
                 </Card.Header>
-                <Card.Body>
+                <Card.Body className="pt-2">
                   <Row>
-                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label className="d-flex align-items-center">
-                          <FaEnvelope className="me-2" /> Personal Email
-                        </Form.Label>
-                        <Form.Control
-                          type="email"
-                          name="email"
-                          value={formData.email || ""}
-                          onChange={handleChange}
-                          required
-                        />
-                      </Form.Group>
-                    </Col>
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label className="d-flex align-items-center">
@@ -558,41 +512,19 @@ export const StudentEditProfile = () => {
                         </Form.Label>
                         <Form.Control
                           type="email"
-                          name="collegeEmail"
-                          value={formData.collegeEmail || ""}
+                          name="email"
+                          value={formData.email}
                           onChange={handleChange}
-                          required
-                        />
-                      </Form.Group>
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label className="d-flex align-items-center">
-                          <FaPhone className="me-2" /> Phone Number
-                        </Form.Label>
-                        <Form.Control
-                          type="tel"
-                          name="phone"
-                          value={formData.phone || ""}
-                          onChange={handleChange}
-                          required
+                          readOnly
                         />
                       </Form.Group>
                     </Col>
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label className="d-flex align-items-center">
-                          <FaIdCard className="me-2" /> Address
+                          <FaPhone className="me-2" /> phone Number
                         </Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="address"
-                          value={formData.address || ""}
-                          onChange={handleChange}
-                        />
+                        <Form.Control type="tel" name="phoneNum" value={formData.phoneNum} onChange={handleChange} required />
                       </Form.Group>
                     </Col>
                   </Row>
@@ -600,30 +532,11 @@ export const StudentEditProfile = () => {
               </Card>
 
               <div className="d-flex justify-content-end mt-4">
-                <Button
-                  variant="outline-secondary"
-                  onClick={handleCancel}
-                  className="me-2"
-                  disabled={isSaving || isUploading}
-                >
+                <Button variant="outline-secondary" onClick={handleCancel} className="me-2">
                   Cancel
                 </Button>
-                <Button variant="primary" type="submit" disabled={isSaving || isUploading}>
-                  {isSaving || isUploading ? (
-                    <>
-                      <Spinner
-                        as="span"
-                        animation="border"
-                        size="sm"
-                        role="status"
-                        aria-hidden="true"
-                        className="me-2"
-                      />
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Changes"
-                  )}
+                <Button variant="primary" type="submit">
+                  Save Changes
                 </Button>
               </div>
             </Col>

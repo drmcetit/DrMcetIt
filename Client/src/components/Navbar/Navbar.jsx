@@ -88,10 +88,10 @@ const ModernNavbar = () => {
 
         <Navbar.Collapse id="basic-navbar-nav" className="navbar-collapse">
           <Nav className="mx-auto">
-            <Nav.Link href="#home" onClick={handleNavItemClick} className="nav-link">
+            <Nav.Link href="/" onClick={handleNavItemClick} className="nav-link">
               Home
             </Nav.Link>
-            <Nav.Link href="#about" onClick={handleNavItemClick} className="nav-link">
+            <Nav.Link href="/about" onClick={handleNavItemClick} className="nav-link">
               About
             </Nav.Link>
             <Nav.Link href="#services" onClick={handleNavItemClick} className="nav-link">
@@ -100,7 +100,7 @@ const ModernNavbar = () => {
             <Nav.Link href="#portfolio" onClick={handleNavItemClick} className="nav-link">
               Facilities
             </Nav.Link>
-            <Nav.Link href="#contact" onClick={handleNavItemClick} className="nav-link">
+            <Nav.Link href="/association" onClick={handleNavItemClick} className="nav-link">
               Association
             </Nav.Link>
             <Nav.Link href={profile} onClick={handleNavItemClick} className="nav-link">
