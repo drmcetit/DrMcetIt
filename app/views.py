@@ -494,8 +494,8 @@ class ProfileEditView(generics.RetrieveUpdateAPIView):
         serialize=StudentSerializer(studentqs,data=request.data,partial=True)
 
         if(serialize.is_valid()):
-            
-            serialize.validated_data.pop('profilePic')
+            if(serialize.validated_data('profilePic') is None):
+                serialize.validated_data.pop('profilePic')
             serialize.save()
             #return Response(serialize.data, status=status.HTTP_200_OK)
             return JsonResponse({"Profile":f"Profile updated for {user.username}"},status=status.HTTP_202_ACCEPTED)
