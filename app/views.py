@@ -523,6 +523,7 @@ class ProfileView(generics.ListAPIView):
         
         profileqs=StudentModel.objects.get(User=user)
         profileSerialize=StudentSerializer(profileqs).data
+        profileSerialize["email"]=user.username
         return JsonResponse(profileSerialize,status=status.HTTP_200_OK)
         # return super().get(request, *args, **kwargs)
     
