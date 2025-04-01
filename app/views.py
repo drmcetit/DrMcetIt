@@ -494,7 +494,7 @@ class ProfileEditView(generics.RetrieveUpdateAPIView):
         serialize=StudentSerializer(studentqs,data=request.data,partial=True)
 
         if 'profilePic' not in request.FILES:
-            serialize.pop('profilePic')
+            serialize.validated_data.pop('profilePic')
 
         if(serialize.is_valid()):
             serialize.save()
