@@ -79,6 +79,19 @@ class StudentSerializer(serializers.ModelSerializer):
             'profilePic': {'required': False}  # Make image optional
         }
 
+    def update(self, instance, validated_data):
+    # Only update profilePic if a new one is provided
+        profile_pic = validated_data.pop('profilePic', None)
+        if profile_pic:
+            instance.profilePic = profile_pic  # Update image only if provided
+        
+        # Update other fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
 class BadgeSerializer(serializers.ModelSerializer):
 
     class Meta:
