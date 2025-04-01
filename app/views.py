@@ -42,7 +42,7 @@ def count(count,step):
         mul=2
     else:
         max=15
-        num=3
+        mul=3
     while(num<=count):#10
         num*=mul
         if(num>max):
