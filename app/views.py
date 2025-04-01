@@ -491,11 +491,14 @@ class ProfileEditView(generics.RetrieveUpdateAPIView):
             return JsonResponse({"profile":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
         
         studentqs=self.get_object()
-        serialize=StudentSerializer(studentqs,data=request.data,partial=True)
+
+        mutable_data = request.data.copy()
+        if 'profilePic' not in request.FILES:
+            mutable_data.pop('profilePic', None)
+
+        serialize=StudentSerializer(studentqs,data=mutable_data,partial=True)
 
         if(serialize.is_valid()):
-            if(serialize.validated_data.get('profilePic') is None):
-                serialize.validated_data.pop('profilePic')
             serialize.save()
             #return Response(serialize.data, status=status.HTTP_200_OK)
             return JsonResponse({"Profile":f"Profile updated for {user.username}"},status=status.HTTP_202_ACCEPTED)
