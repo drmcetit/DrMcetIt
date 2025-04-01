@@ -67,7 +67,12 @@ class StudentSerializer(serializers.ModelSerializer):
             'Leetcode',
             'Github',
             'Linkedin',
-            'HackerRank'
+            'HackerRank',
+            'bio',
+            'profilePic',
+            'batch',
+            'phoneNum',
+            'email'
         ]
 
 class BadgeSerializer(serializers.ModelSerializer):
