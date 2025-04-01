@@ -70,6 +70,7 @@ class StudentSerializer(serializers.ModelSerializer):
             'Linkedin',
             'HackerRank',
             'bio',
+            'profilePic',
             'batch',
             'phoneNum',
             'email'
