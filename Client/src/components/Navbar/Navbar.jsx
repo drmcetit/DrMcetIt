@@ -8,6 +8,7 @@ const ModernNavbar = () => {
   const [scrolled, setScrolled] = useState(false)
   const [state, setState] =useState(true)
   const [profile, setProfile] = useState(false)
+  const [profileSvg, setProfileSvg] = useState(false)
   const [staffProfile, setStaffProfile] = useState(false)
   const navbarRef = useRef(null)
   const[openPopup, setOpenPopup]=useState(false)
@@ -64,6 +65,7 @@ const ModernNavbar = () => {
   useEffect(() => {
     if(localStorage.getItem("access_token") || localStorage.getItem("access_token_staff")){
       setState(false);
+      setProfileSvg(true);
     }
     if(localStorage.getItem("access_token")){
       setProfile(true);
@@ -118,6 +120,14 @@ const ModernNavbar = () => {
           {/* {state && <Link to="/student-login" className="text-primary">
             <button className='btn btn-primary text-white ms-lg-3 px-4'>Login</button>
           </Link>} */}
+          {profileSvg && profile&&
+          <a href="/student-profile">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#000000" d="M5.85 17.1q1.275-.975 2.85-1.537T12 15t3.3.563t2.85 1.537q.875-1.025 1.363-2.325T20 12q0-3.325-2.337-5.663T12 4T6.337 6.338T4 12q0 1.475.488 2.775T5.85 17.1M12 13q-1.475 0-2.488-1.012T8.5 9.5t1.013-2.488T12 6t2.488 1.013T15.5 9.5t-1.012 2.488T12 13m0 9q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg></a>
+          }
+          {profileSvg && staffProfile&&
+          <a height="/staff-profile">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#000000" d="M5.85 17.1q1.275-.975 2.85-1.537T12 15t3.3.563t2.85 1.537q.875-1.025 1.363-2.325T20 12q0-3.325-2.337-5.663T12 4T6.337 6.338T4 12q0 1.475.488 2.775T5.85 17.1M12 13q-1.475 0-2.488-1.012T8.5 9.5t1.013-2.488T12 6t2.488 1.013T15.5 9.5t-1.012 2.488T12 13m0 9q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg></a>
+          }
            {state && <button className='btn btn-primary text-white ms-lg-3 px-4' onClick={()=>[ setOpenPopup(true),Scroll()]}>Login</button>}
           </div>
 
@@ -151,12 +161,12 @@ const ModernNavbar = () => {
             <Nav.Link href="/association" onClick={handleNavItemClick} className="nav-link">
               Association
             </Nav.Link>
-            { profile && <Nav.Link href="/student-profile" onClick={handleNavItemClick} className="nav-link">
+            {/* { profile && <Nav.Link href="/student-profile" onClick={handleNavItemClick} className="nav-link">
               Profile
             </Nav.Link>}
             { staffProfile && <Nav.Link href="/staff-profile" onClick={handleNavItemClick} className="nav-link">
               Profile
-            </Nav.Link>}
+            </Nav.Link>} */}
           </Nav>
 
           <div className="d-none d-lg-block">
@@ -164,6 +174,14 @@ const ModernNavbar = () => {
             <button className='btn btn-primary text-white ms-lg-3 px-4'>Login</button>
             </Link>} */}
             {state && <button className='btn btn-primary text-white ms-lg-3 px-4' onClick={()=>[ setOpenPopup(true),Scroll()]}>Login</button>}
+            {profileSvg && profile&&
+            <Link to="/student-profile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#000000" d="M5.85 17.1q1.275-.975 2.85-1.537T12 15t3.3.563t2.85 1.537q.875-1.025 1.363-2.325T20 12q0-3.325-2.337-5.663T12 4T6.337 6.338T4 12q0 1.475.488 2.775T5.85 17.1M12 13q-1.475 0-2.488-1.012T8.5 9.5t1.013-2.488T12 6t2.488 1.013T15.5 9.5t-1.012 2.488T12 13m0 9q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg></Link>
+            }
+            {profileSvg && staffProfile&&
+            <Link to="/staff-profile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#000000" d="M5.85 17.1q1.275-.975 2.85-1.537T12 15t3.3.563t2.85 1.537q.875-1.025 1.363-2.325T20 12q0-3.325-2.337-5.663T12 4T6.337 6.338T4 12q0 1.475.488 2.775T5.85 17.1M12 13q-1.475 0-2.488-1.012T8.5 9.5t1.013-2.488T12 6t2.488 1.013T15.5 9.5t-1.012 2.488T12 13m0 9q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg></Link>
+            }
           </div>
         </Navbar.Collapse>
       </Container>

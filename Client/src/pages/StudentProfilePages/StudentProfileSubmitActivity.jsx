@@ -187,7 +187,6 @@ const handleSubmit = async (event) => {
   //     console.log(error.year[0])
   //     console.error('Error submitting form:', error);
   // }
-
   try {
     const response = await fetch("http://127.0.0.1:8000/api/event/certificate/", {
       method: "POST",
@@ -562,6 +561,11 @@ const handleSubmit = async (event) => {
                     value={formData.date}
                     onChange={handleChange}
                     required
+                    onInvalid={(e) => {
+                      e.preventDefault(); // Prevent default browser tooltip
+                      alert("Please select a valid date.");
+                    }}
+                
                   />
                   <Form.Text className="text-muted">
                     Format: DD-MM-YYYY
