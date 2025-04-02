@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import login 
+from django.db.models import Q
 
 from rest_framework import generics
 from rest_framework import status
@@ -529,3 +530,42 @@ class ProfileView(generics.ListAPIView):
     
 ProfileViewClass=ProfileView.as_view()
 
+class StudentListView(generics.ListAPIView):
+    queryset=StudentModel.objects.all()
+    serializer_class=StudentSerializer
+
+    def get(self, request, *args, **kwargs):
+        # return super().get(request, *args, **kwargs)
+
+        user=self.request.user
+
+        if(not user.is_authenticated):
+            return Response({"studentList":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        teacher=TeacherModel.objects.filter(User=user)
+
+        if not teacher.exists():
+            return Response({"studentList":"Not a valid teacher account"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        teacher=TeacherModel.objects.get(User=user)
+        empId=user.username
+        classqs=ClassModel.objects.filter(Q(mentor1=empId) | Q(mentor2=empId) | Q(mentor3=empId))
+        if not(classqs.exists()):
+            return Response({"studentList":"Your not the CC or Mentor of any Class"},status=status.HTTP_400_BAD_REQUEST)
+        
+        classqs=ClassModel.objects.get(Q(mentor1=empId) | Q(mentor2=empId) | Q(mentor3=empId))
+        CCempId=classqs.CC
+
+        CC=User.objects.get(username=CCempId)
+        CCName=TeacherModel.objects.get(User=CC).Name
+
+        StudentListqs=StudentModel.objects.filter(CC=CCName)
+
+        if not(StudentListqs.exists()):
+            return Response({"studentList":"No student list available"},status=status.HTTP_204_NO_CONTENT)
+        
+        StudentList=StudentSerializer(StudentListqs,many=True)
+
+        return Response(StudentList.data,status=status.HTTP_200_OK)
+    
+StudentListClass=StudentListView.as_view()

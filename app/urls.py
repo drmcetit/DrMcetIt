@@ -17,5 +17,6 @@ urlpatterns=[
     path("profile/activities/",views.ActivityViewClass,name="Activites of a student"),
     path('profile/edit/',views.ProfileEditClass,name="Profile edit"),
     path("badges/description/",views.BadgeDetailClass,name="Badge description"),
+    path("teacher/studentList/",views.StudentListClass,name="Student list for mentor")
 
 ]
