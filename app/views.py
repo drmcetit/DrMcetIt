@@ -546,32 +546,57 @@ class StudentListView(generics.ListAPIView):
         user=self.request.user
 
         if(not user.is_authenticated):
-            return Response({"studentList":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({"studentList":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
         
         teacher=TeacherModel.objects.filter(User=user)
-
         if not teacher.exists():
-            return Response({"studentList":"Not a valid teacher account"},status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({"studentList":"Not a valid teacher account"},status=status.HTTP_401_UNAUTHORIZED)
         
         teacher=TeacherModel.objects.get(User=user)
         empId=user.username
         classqs=ClassModel.objects.filter(Q(mentor1=empId) | Q(mentor2=empId) | Q(mentor3=empId))
         if not(classqs.exists()):
-            return Response({"studentList":"Your not the CC or Mentor of any Class"},status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"studentList":"Your not the CC or Mentor of any Class"},status=status.HTTP_400_BAD_REQUEST)
         
         classqs=ClassModel.objects.get(Q(mentor1=empId) | Q(mentor2=empId) | Q(mentor3=empId))
         CCempId=classqs.CC
 
         CC=User.objects.get(username=CCempId)
         CCName=TeacherModel.objects.get(User=CC).Name
-
         StudentListqs=StudentModel.objects.filter(CC=CCName)
 
         if not(StudentListqs.exists()):
-            return Response({"studentList":"No student list available"},status=status.HTTP_204_NO_CONTENT)
+            return JsonResponse({"studentList":"No student list available"},status=status.HTTP_204_NO_CONTENT)
         
         StudentList=StudentSerializer(StudentListqs,many=True)
 
-        return Response(StudentList.data,status=status.HTTP_200_OK)
+        return JsonResponse(StudentList.data,status=status.HTTP_200_OK)
     
 StudentListClass=StudentListView.as_view()
+
+class StudentDetailView(generics.RetrieveAPIView):
+    queryset=StudentModel.objects.all()
+    serializer_class=StudentSerializer
+
+    def get(self, request,rollNo=None, *args, **kwargs):
+
+        user=self.request.user
+        if not(user.is_authenticated):
+            return JsonResponse({"student":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        teacher=TeacherModel.objects.filter(User=user)
+        if not(teacher.exists()):
+            return JsonResponse({"student":"Not a valid student account"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        if rollNo is None:
+            return JsonResponse({"student":"The roll number is not provided"},status=status.HTTP_400_BAD_REQUEST)
+        
+        student=StudentModel.objects.filter(RollNum=rollNo)
+        if not student.exists():
+            return JsonResponse({"student":"There is no student detail at the specified roll number"},status=status.HTTP_204_NO_CONTENT)
+        
+        studentqs=StudentModel.objects.get(RollNum=rollNo)
+        student=StudentSerializer(studentqs)
+        return JsonResponse(student.data,status=status.HTTP_200_OK)
+    
+StudentDetailClass=StudentDetailView.as_view()

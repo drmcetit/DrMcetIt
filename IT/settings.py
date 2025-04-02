@@ -180,4 +180,4 @@ CSRF_COOKIE_SECURE = False  # Set to True in production (for HTTPS)
 CSRF_TRUSTED_ORIGINS=["http://localhost:5173"]
 
 CSRF_COOKIE_NAME = "csrftoken"
-CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"  
+CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"
