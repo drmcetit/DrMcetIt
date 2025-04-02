@@ -31,7 +31,7 @@ class PlacmentSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
 
-    date=serializers.DateField(required=True, error_messages={"required": "The date field is required."})
+    date=serializers.DateTimeField(required=True, error_messages={"required": "The date field is required."})
     class Meta:
         model=EventModel
         fields=[
