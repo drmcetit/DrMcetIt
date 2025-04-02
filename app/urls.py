@@ -1,9 +1,11 @@
 from django.urls import path
 from . import views
+from .views import get_csrf_token
 
 urlpatterns=[
     #Event certificate and the activities are same
     # path('',views.HomeViewClass,name="Home"),
+    path("get-csrf-token/", get_csrf_token, name="get-csrf-token"),
     path("signup/student/",views.RegisterClass,name="Student Signup"),
     path("login/student/",views.LoginViewClass,name="Student login"),
     path("signup/teacher/",views.TeacherRegisterClass,name="Teacher Signup"),

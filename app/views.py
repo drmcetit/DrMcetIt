@@ -15,6 +15,7 @@ from rest_framework import views
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.middleware.csrf import get_token
 
 from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel,ClassModel
 from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializer,StudentSerializer,BadgeSerializer
@@ -60,6 +61,11 @@ def spertateDate(serializer):
     for i in serializer:
         i["date"]=i["date"][:10]
     return serializer
+
+
+def get_csrf_token(request):
+    return JsonResponse({'csrfToken': get_token(request)})
+
 
 class Register(views.APIView):
     # queryset=User.objects.all()
