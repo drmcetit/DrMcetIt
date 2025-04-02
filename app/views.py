@@ -336,7 +336,7 @@ class EventCertificateView(generics.ListCreateAPIView):
         Club=serializer.validated_data.get("club")
 
         if(Date is None):
-            raise ValidationError({"submitted":"Date is required"},status=status.HTTP_404_NOT_FOUND)
+            raise ValidationError({"submitted":"Date is required"})
         
         qs=EventModel.objects.filter(rollNo=RollNum,event=Event,date=Date,organizer=Organizer,club=Club)
         if(qs.exists()):
