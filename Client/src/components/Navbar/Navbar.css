@@ -141,3 +141,33 @@ to {
 }
 }
 
+.active_modal{
+    overflow-y: hidden;  
+}
+/* popup_login */
+.popup_login{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary-color) 0.5;
+    backdrop-filter: blur(9px);
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .X{
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    background: transparent;
+    outline: none;
+    border: none;
+    fill: var(--text-color);
+  }
+  .X:hover{
+    fill: var(--primary-button-color);
+  }

@@ -118,25 +118,24 @@ const handleChange = (event) => {
   useEffect(()=>{
     home()
   },[])
-  function getCSRFToken() {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        const [name, value] = cookie.trim().split('=');
-        if (name === 'csrftoken') {
-            return value;
-        }
+  async function fetchCSRFToken() {
+    try {
+        const response = await fetch("http://127.0.0.1:8000/api/get-csrf-token/", {
+            credentials: "include",  // Ensure cookies are sent
+        });
+        const data = await response.json();
+        console.log("Fetched CSRF Token:", data.csrfToken);
+        return data.csrfToken;
+    } catch (error) {
+        console.error("Failed to fetch CSRF token", error);
+        return null;
     }
-    return null;
 }
 const handleSubmit = async (event) => {
   event.preventDefault();
 
-  const csrfToken = getCSRFToken();
-  if (!csrfToken) {
-      alert("CSRF token missing. Please refresh the page or check login status.");
-      return;
-  }
-
+  const csrfToken = await fetchCSRFToken();
+  
   const formDataToSend = new FormData();
   formDataToSend.append("year", formData.year);
   formDataToSend.append("student", formData.student);

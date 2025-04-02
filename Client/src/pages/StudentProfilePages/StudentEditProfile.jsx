@@ -132,22 +132,37 @@ export const StudentEditProfile = () => {
   };
   
   // Get CSRF token from cookies
-  const getCSRFToken = () => {
-    return document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("csrftoken="))
-      ?.split("=")[1];
-  };
+  // const getCSRFToken = () => {
+  //   return document.cookie
+  //     .split("; ")
+  //     .find((row) => row.startsWith("csrftoken="))
+  //     ?.split("=")[1];
+  // };
   
+  async function fetchCSRFToken() {
+    try {
+        const response = await fetch("http://127.0.0.1:8000/api/get-csrf-token/", {
+            credentials: "include",  // Ensure cookies are sent
+        });
+        const data = await response.json();
+        console.log("Fetched CSRF Token:", data.csrfToken);
+        return data.csrfToken;
+    } catch (error) {
+        console.error("Failed to fetch CSRF token", error);
+        return null;
+    }
+}
+
   // Submit the form data
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const csrfToken = getCSRFToken();
+    const csrfToken = await fetchCSRFToken();
   
-    if (!csrfToken) {
-      alert("CSRF token missing. Please refresh the page or check login status.");
-      return;
-    }
+    // console.log(document.cookie);
+    // if (!csrfToken) {
+    //   alert("CSRF token missing. Please refresh the page or check login status.");
+    //   return;
+    // }
   
     const formDataToSend = new FormData();
       formDataToSend.append("Name", formData.Name);
@@ -174,19 +189,20 @@ export const StudentEditProfile = () => {
     try {
       const response = await fetch("http://127.0.0.1:8000/api/profile/edit/", {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "X-CSRFToken": csrfToken,
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: formDataToSend, // Don't set Content-Type manually for FormData
       });
-  
+      
       if (!response.ok) {
         throw new Error(`Failed to update profile. Status: ${response.status}`);
       }
   
       alert("Profile updated successfully!");
-      navigate("/student-profile/info/edit");
+      navigate("/student-profile/info/");
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Failed to update profile.");
