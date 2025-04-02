@@ -221,8 +221,8 @@ class TeacherLoginView(views.APIView):
 
             return JsonResponse({
                 "login": "success",
-                "access_token": access_token,
-                "refresh_token": str(refresh)
+                "access_token_staff": access_token,
+                "refresh_token_staff": str(refresh)
             }, status=status.HTTP_200_OK)
         else:
             return JsonResponse({"login": "User account is inactive."},status=status.HTTP_403_FORBIDDEN)
@@ -528,3 +528,4 @@ class ProfileView(generics.ListAPIView):
         # return super().get(request, *args, **kwargs)
     
 ProfileViewClass=ProfileView.as_view()
+
