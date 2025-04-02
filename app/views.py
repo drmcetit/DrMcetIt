@@ -600,3 +600,4 @@ class StudentDetailView(generics.RetrieveAPIView):
         return JsonResponse(student.data,status=status.HTTP_200_OK)
     
 StudentDetailClass=StudentDetailView.as_view()
+
