@@ -169,7 +169,7 @@ SIMPLE_JWT = {
 
 
 CSRF_COOKIE_HTTPONLY = False  # So React can access it via JavaScript
-CSRF_COOKIE_SAMESITE = 'Lax'  # Adjust as needed ('None' if using cross-origin)
+CSRF_COOKIE_SAMESITE = None  # Adjust as needed ('None' if using cross-origin)
 CSRF_COOKIE_SECURE = False  # Set to True in production (for HTTPS)
 
 CSRF_TRUSTED_ORIGINS=["http://localhost:5173/"]
