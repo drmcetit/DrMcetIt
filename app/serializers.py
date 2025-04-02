@@ -31,6 +31,7 @@ class PlacmentSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
 
+    date=serializers.DateField(required=True, error_messages={"required": "The date field is required."})
     class Meta:
         model=EventModel
         fields=[
@@ -52,6 +53,8 @@ class EventSerializer(serializers.ModelSerializer):
             'proofAttachment'
 
         ]
+
+   
 
 class StudentSerializer(serializers.ModelSerializer):
 

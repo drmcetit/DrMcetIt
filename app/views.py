@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import login 
 from django.db.models import Q
-from django.core.exceptions import ValidationError
 
 from rest_framework import generics
 from rest_framework import status
@@ -335,8 +334,7 @@ class EventCertificateView(generics.ListCreateAPIView):
         Organizer=serializer.validated_data.get("organizer")
         Club=serializer.validated_data.get("club")
 
-        if(Date is None):
-            raise ValidationError({"submitted":"Date is required"})
+       
         
         qs=EventModel.objects.filter(rollNo=RollNum,event=Event,date=Date,organizer=Organizer,club=Club)
         if(qs.exists()):
