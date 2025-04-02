@@ -16,6 +16,10 @@ import { StudentProfileInfo } from './pages/StudentProfilePages/StudentProfileIn
 import { StudentEditProfile } from './pages/StudentProfilePages/StudentEditProfile';
 import { About } from './pages/About';
 import { Association } from './pages/Association';
+import { StaffLogin } from './pages/Login/StaffLogin';
+import { StaffSignup } from './pages/Signup/StaffSignup';
+import { StaffProfile } from './pages/Staff/StaffProfile';
+import { StaffSetting } from './pages/Staff/StaffSetting';
 
 function App() {
   const [profileDashboard, setProfileDashboard] = useState("/student-login")
@@ -24,6 +28,9 @@ function App() {
   const [profileViewParticipated, setprofileViewParticipated] = useState("/student-login")
   const [profileInfo, setprofileInfo] = useState("/student-login")
   const [profileEdit, setprofileEdit] = useState("/student-login")
+  
+  const [staffProfile, setStaffProfile] = useState("/staff-login")
+  const [staffProfileSettings, setStaffProfileSettings] = useState("/staff-login")
 
   useEffect(() => {
     if(localStorage.getItem("access_token")){
@@ -33,6 +40,10 @@ function App() {
       setprofileViewParticipated("/student-profile/view/participated")
       setprofileInfo("/student-profile/info")
       setprofileEdit("/student-profile/info/edit")
+    }
+    if(localStorage.getItem("access_token_staff")){
+      setStaffProfile("/staff-profile")
+      setStaffProfileSettings("/staff-profile/setting")
     }
   })
   
@@ -52,6 +63,13 @@ function App() {
         <Route path={profileViewParticipated} element={ <StudentProfileViewParcipated/> } />
         <Route path={profileInfo} element={ <StudentProfileInfo/> } />
         <Route path={profileEdit} element={ <StudentEditProfile/> } />
+
+
+        <Route path="/staff-login" element={ <StaffLogin/> } />
+        <Route path="/staff-signup" element={ <StaffSignup/> } />
+
+        <Route path={staffProfile} element={ <StaffProfile/> } />
+        <Route path={staffProfileSettings} element={ <StaffSetting/> } />
       </Routes>
     </BrowserRouter>
     </>
