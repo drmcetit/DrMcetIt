@@ -29,10 +29,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-CORS_ORIGIN_WHITELIST = (
+CORS_ALLOWED_ORIGINS = (
     'http://localhost:3000',
     'http://localhost:5173',
 )
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+]
 
 
 # Application definition
@@ -169,7 +174,10 @@ SIMPLE_JWT = {
 
 
 CSRF_COOKIE_HTTPONLY = False  # So React can access it via JavaScript
-CSRF_COOKIE_SAMESITE = None  # Adjust as needed ('None' if using cross-origin)
+CSRF_COOKIE_SAMESITE = "None"  # Adjust as needed ('None' if using cross-origin)
 CSRF_COOKIE_SECURE = False  # Set to True in production (for HTTPS)
 
-CSRF_TRUSTED_ORIGINS=["http://localhost:5173/"]
+CSRF_TRUSTED_ORIGINS=["http://localhost:5173"]
+
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"  
