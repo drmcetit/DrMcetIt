@@ -20,6 +20,7 @@ import { StaffLogin } from './pages/Login/StaffLogin';
 import { StaffSignup } from './pages/Signup/StaffSignup';
 import { StaffProfile } from './pages/Staff/StaffProfile';
 import { StaffSetting } from './pages/Staff/StaffSetting';
+import { StudentProfile } from './pages/Staff/StudentProfile';
 
 function App() {
   const [profileDashboard, setProfileDashboard] = useState("/student-login")
@@ -31,6 +32,7 @@ function App() {
   
   const [staffProfile, setStaffProfile] = useState("/staff-login")
   const [staffProfileSettings, setStaffProfileSettings] = useState("/staff-login")
+  const [studenProfile, setStudentProfile] = useState("/staff-login")
 
   useEffect(() => {
     if(localStorage.getItem("access_token")){
@@ -44,6 +46,7 @@ function App() {
     if(localStorage.getItem("access_token_staff")){
       setStaffProfile("/staff-profile")
       setStaffProfileSettings("/staff-profile/setting")
+      setStudentProfile("/student/:User")
     }
   })
   
@@ -70,6 +73,8 @@ function App() {
 
         <Route path={staffProfile} element={ <StaffProfile/> } />
         <Route path={staffProfileSettings} element={ <StaffSetting/> } />
+        <Route path={studenProfile} element={ <StudentProfile/> } />
+
       </Routes>
     </BrowserRouter>
     </>

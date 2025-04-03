@@ -117,7 +117,7 @@ export const StaffSignup = () => {
                   
 
                   <Form.Group className="mb-3">
-                    <Form.Label>College Mail</Form.Label>
+                    <Form.Label>Emp id</Form.Label>
                     <InputGroup>
                       <InputGroup.Text><FaEnvelope /></InputGroup.Text>
                       <Form.Control

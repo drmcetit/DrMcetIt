@@ -94,7 +94,7 @@ const HeroCarousel = () => {
                 rel="preload"
                 style={{
                     backgroundImage: `url(${slide.image})`,
-                    height: "500px",
+                    height: "80vh",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     borderRadius: "8px",
