@@ -572,7 +572,7 @@ class StudentListView(generics.ListAPIView):
         
         StudentList=StudentSerializer(StudentListqs,many=True)
 
-        return JsonResponse(StudentList.data,status=status.HTTP_200_OK)
+        return Response(StudentList.data,status=status.HTTP_200_OK)
     
 StudentListClass=StudentListView.as_view()
 
