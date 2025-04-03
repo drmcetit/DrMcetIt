@@ -145,6 +145,7 @@ export const StudentProfile = () => {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [studentsData, setStudentsData] = useState([]);
+  const [noActivity, setNoActivity] = useState(false)
   const { User } = useParams();
   console.log("Student User from useParams:", User);
 
@@ -182,6 +183,7 @@ useEffect(() => {
 if (loading) {
   return <div className="text-center p-5">Loading student profile...</div>;
 }
+console.log(student.activites[0])
 
 if (!student) {
   return (
@@ -207,7 +209,7 @@ if (!student) {
               <div className="mb-3 position-relative">
                 <div className="position-relative d-inline-block">
                   <img
-                    src={student.profilePic || "https://via.placeholder.com/150"}
+                    src={`http://127.0.0.1:8000/${student.profilePic}` || "https://via.placeholder.com/150"}
                     alt={student.Name}
                     className="rounded-circle border p-1 bg-light"
                     width="130"
@@ -344,6 +346,9 @@ if (!student) {
                     </tr>
                   </thead>
                   <tbody>
+                    {noActivity && <tr>
+                      <p>No Activities Found</p>
+                    </tr>}
                     {student.activites.map((activity) => (
                       <tr key={activity.id}>
                         <td>{activity.event}</td>

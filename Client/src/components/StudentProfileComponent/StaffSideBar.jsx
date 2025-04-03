@@ -26,9 +26,9 @@ export const StaffSideBar = () => {
       <div className="d-flex align-items-center justify-content-between p-3 border-bottom">
         <div  className={`mb-0 ${collapsed ? "d-none" : ""} d-flex`}>
 
-        {/* <a href="/" style={{textDecoration:"none", color:"black"}}>
+        <a href="/" style={{textDecoration:"none", color:"black"}}>
           <IoIosArrowBack  style={{cursor:"pointer", fontSize:"20px"}}/>
-        </a> */}
+        </a>
         <h5>Profile Dashboard</h5>
         </div>
         <button className="btn btn-sm btn-light" onClick={toggleSidebar}>
