@@ -17,8 +17,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.middleware.csrf import get_token
 
-from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel,ClassModel
-from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializer,StudentSerializer,BadgeSerializer
+from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel,ClassModel,objectiveModel
+from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializer,StudentSerializer,BadgeSerializer,objectiveSerializer
 
 # Create your views here.
 
@@ -588,30 +588,24 @@ class StudentListView(generics.ListAPIView):
     
 StudentListClass=StudentListView.as_view()
 
-# class StudentDetailView(generics.RetrieveAPIView):
-#     queryset=StudentModel.objects.all()
-#     serializer_class=StudentSerializer
+class ObjectiveView(generics.ListAPIView):
+    #Before view make sure that you addded the objective in admin
+    queryset=objectiveModel.objects.all()
+    serializer_class=objectiveSerializer
 
-#     def get(self, request,rollNo=None, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
+        queryset=objectiveModel.objects.all()
+        PO={}
+        
+        PEOqs=objectiveModel.objects.filter(POId__contains ="PEO")
+       
+        PO["PEO"]=objectiveSerializer(PEOqs,many=True).data
 
-#         user=self.request.user
-#         if not(user.is_authenticated):
-#             return JsonResponse({"student":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
-        
-#         teacher=TeacherModel.objects.filter(User=user)
-#         if not(teacher.exists()):
-#             return JsonResponse({"student":"Not a valid student account"},status=status.HTTP_401_UNAUTHORIZED)
-        
-#         if rollNo is None:
-#             return JsonResponse({"student":"The roll number is not provided"},status=status.HTTP_400_BAD_REQUEST)
-        
-#         student=StudentModel.objects.filter(RollNum=rollNo)
-#         if not student.exists():
-#             return JsonResponse({"student":"There is no student detail at the specified roll number"},status=status.HTTP_204_NO_CONTENT)
-        
-#         studentqs=StudentModel.objects.get(RollNum=rollNo)
-#         student=StudentSerializer(studentqs)
-#         return JsonResponse(student.data,status=status.HTTP_200_OK)
-    
-# StudentDetailClass=StudentDetailView.as_view()
+        POqs=objectiveModel.objects.filter(POId__contains ="PO")
+        PO["PO"]=objectiveSerializer(POqs,many=True).data
+        PSOqs=objectiveModel.objects.filter(POId__contains ="PSO")
+        PO["PSO"]=objectiveSerializer(PSOqs,many=True).data
 
+        return JsonResponse(PO,status=status.HTTP_200_OK)
+
+ObjectiveClass=ObjectiveView.as_view()

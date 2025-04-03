@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel,ClassModel
+from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel,ClassModel,objectiveModel
 
 admin.site.register(StudentModel)
 
@@ -30,3 +30,8 @@ admin.site.register(BadgeModel,BadgeAdmin)
 admin.site.register(TeacherModel)
 
 admin.site.register(ClassModel)
+
+class ObjectiveAdmin(admin.ModelAdmin):
+    list_filter=("POId",)
+    llist_per_page=7
+admin.site.register(objectiveModel,ObjectiveAdmin)

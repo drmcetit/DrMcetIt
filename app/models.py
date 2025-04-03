@@ -121,3 +121,11 @@ class TeacherModel(models.Model):
 
     def __str__(self):
         return f"{self.User.username}-{self.Name}"
+    
+class objectiveModel(models.Model):
+    POId=models.CharField(max_length=10,unique=True)
+    title=models.CharField(max_length=35,null=True,blank=True)
+    description=models.TextField()
+
+    def __str__(self):
+        return f"{self.POId}-{self.title}"

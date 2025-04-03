@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import AssosiationMembersModel,PlacementModel,EventModel,StudentModel,BadgeModel
+from .models import AssosiationMembersModel,PlacementModel,EventModel,StudentModel,BadgeModel,objectiveModel
 
 class AssositationSerializer(serializers.ModelSerializer):
 
@@ -106,3 +106,13 @@ class BadgeSerializer(serializers.ModelSerializer):
             "Image"
         ]
         
+
+class objectiveSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model=objectiveModel
+        fields=[
+            'POId',
+            'title',
+            'description'
+        ]
