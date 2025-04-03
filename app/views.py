@@ -570,36 +570,48 @@ class StudentListView(generics.ListAPIView):
         if not(StudentListqs.exists()):
             return JsonResponse({"studentList":"No student list available"},status=status.HTTP_204_NO_CONTENT)
         
-        StudentList=StudentSerializer(StudentListqs,many=True)
+        StudentList=StudentSerializer(StudentListqs,many=True).data
+        #Add the activity 
+        for i in StudentList:
+            rollNum=i['RollNum']
+            activitesqs=EventModel.objects.filter(rollNo=rollNum)
 
-        return Response(StudentList.data,status=status.HTTP_200_OK)
+            if not(activitesqs.exists()):
+                i["activites"]=["No activites found"]
+            else:
+                activites=EventSerializer(activitesqs,many=True).data
+                i["activites"]=activites
+            
+            i["collegeMail"]=rollNum+"@mcet.in"
+
+        return Response(StudentList,status=status.HTTP_200_OK)
     
 StudentListClass=StudentListView.as_view()
 
-class StudentDetailView(generics.RetrieveAPIView):
-    queryset=StudentModel.objects.all()
-    serializer_class=StudentSerializer
+# class StudentDetailView(generics.RetrieveAPIView):
+#     queryset=StudentModel.objects.all()
+#     serializer_class=StudentSerializer
 
-    def get(self, request,rollNo=None, *args, **kwargs):
+#     def get(self, request,rollNo=None, *args, **kwargs):
 
-        user=self.request.user
-        if not(user.is_authenticated):
-            return JsonResponse({"student":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
+#         user=self.request.user
+#         if not(user.is_authenticated):
+#             return JsonResponse({"student":"Login required"},status=status.HTTP_401_UNAUTHORIZED)
         
-        teacher=TeacherModel.objects.filter(User=user)
-        if not(teacher.exists()):
-            return JsonResponse({"student":"Not a valid student account"},status=status.HTTP_401_UNAUTHORIZED)
+#         teacher=TeacherModel.objects.filter(User=user)
+#         if not(teacher.exists()):
+#             return JsonResponse({"student":"Not a valid student account"},status=status.HTTP_401_UNAUTHORIZED)
         
-        if rollNo is None:
-            return JsonResponse({"student":"The roll number is not provided"},status=status.HTTP_400_BAD_REQUEST)
+#         if rollNo is None:
+#             return JsonResponse({"student":"The roll number is not provided"},status=status.HTTP_400_BAD_REQUEST)
         
-        student=StudentModel.objects.filter(RollNum=rollNo)
-        if not student.exists():
-            return JsonResponse({"student":"There is no student detail at the specified roll number"},status=status.HTTP_204_NO_CONTENT)
+#         student=StudentModel.objects.filter(RollNum=rollNo)
+#         if not student.exists():
+#             return JsonResponse({"student":"There is no student detail at the specified roll number"},status=status.HTTP_204_NO_CONTENT)
         
-        studentqs=StudentModel.objects.get(RollNum=rollNo)
-        student=StudentSerializer(studentqs)
-        return JsonResponse(student.data,status=status.HTTP_200_OK)
+#         studentqs=StudentModel.objects.get(RollNum=rollNo)
+#         student=StudentSerializer(studentqs)
+#         return JsonResponse(student.data,status=status.HTTP_200_OK)
     
-StudentDetailClass=StudentDetailView.as_view()
+# StudentDetailClass=StudentDetailView.as_view()
 

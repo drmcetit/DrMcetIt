@@ -20,6 +20,6 @@ urlpatterns=[
     path('profile/edit/',views.ProfileEditClass,name="Profile edit"),
     path("badges/description/",views.BadgeDetailClass,name="Badge description"),
     path("teacher/studentList/",views.StudentListClass,name="Student list for mentor"),
-    path("teacher/studentDetail/<str:rollNo>/",views.StudentDetailClass,name="Student detail for teacher")
+    #path("teacher/studentDetail/<str:rollNo>/",views.StudentDetailClass,name="Student detail for teacher")
 
 ]
