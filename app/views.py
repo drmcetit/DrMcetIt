@@ -56,7 +56,7 @@ def count_winner(count):#9,3
             return max
     return int(num-3)
 
-def spertateDate(serializer):
+def separateDate(serializer):#seprateDate
     #Seprate the date and time and return date in the qs
     for i in serializer:
         i["date"]=i["date"][:10]
@@ -427,7 +427,7 @@ class ActivityView(generics.ListAPIView):
             return JsonResponse({"activities":"There no activities currently"},status=status.HTTP_204_NO_CONTENT)
         
         activities=EventSerializer(activitiesqs,many=True).data
-        activities=spertateDate(activities)
+        activities=separateDate(activities)
         return JsonResponse({"activities":activities},status=status.HTTP_200_OK)
         # return super().get(request, *args, **kwargs)
 
@@ -580,7 +580,7 @@ class StudentListView(generics.ListAPIView):
                 i["activites"]=["No activites found"]
             else:
                 activites=EventSerializer(activitesqs,many=True).data
-                i["activites"]=activites
+                i["activites"]=separateDate(activites)
             
             i["collegeMail"]=rollNum+"@mcet.in"
 
