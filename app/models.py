@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+import datetime
 
 
 # Create your models here.
@@ -15,6 +16,8 @@ from django.core.exceptions import ValidationError
 
 #     def __str__(self):
 #         return f"{self.Titile}-{self.Display }"
+
+    
 
 class ClassModel(models.Model):
     year=models.IntegerField()
@@ -35,7 +38,7 @@ class ClassModel(models.Model):
 class StudentModel(models.Model):
     #batch,email,phone num,address
     User=models.ForeignKey(User,on_delete=models.CASCADE)
-    Name=models.CharField(max_length=30,null=True)
+    Name=models.CharField(max_length=40,null=True)
     RollNum=models.CharField(max_length=15,null=True)
     Section=models.CharField(max_length=1,null=True)
     cgpa=models.FloatField(null=True)
@@ -43,8 +46,8 @@ class StudentModel(models.Model):
     Github=models.URLField(null=True)
     Linkedin=models.URLField(null=True)
     HackerRank=models.URLField(null=True)
-    CC=models.CharField(max_length=30,null=True)
-    Mentor=models.CharField(max_length=30,null=True)
+    CC=models.CharField(max_length=40,null=True)
+    Mentor=models.CharField(max_length=40,null=True)
     # CurrentArrear=models.IntegerField(null=True,default=0)
     #email=models.EmailField(null=True)
     phoneNum=models.CharField(max_length=13,null=True)
@@ -56,17 +59,8 @@ class StudentModel(models.Model):
     def __str__(self):
         return f"{self.User.username}-{self.Name}"
     
-class AssosiationMembersModel(models.Model):
-    Name=models.CharField(max_length=30)
-    Desigination=models.CharField(max_length=30)
-    Year=models.CharField(max_length=10)
-    ProfilePic=models.ImageField(upload_to="Assosiation Members",null=True)
-
-    def __str__(self):
-        return f"{self.Name}-{self.Desigination}"
-    
 class PlacementModel(models.Model):
-    Name=models.CharField(max_length=30)
+    Name=models.CharField(max_length=40)
     Batch=models.CharField(max_length=10)
     Placed=models.BooleanField(default=True)
     Desigination=models.CharField(max_length=30)
@@ -83,7 +77,7 @@ class EventModel(models.Model):
     #For event submissions
     department=models.CharField(max_length=5,default='IT')
     year=models.CharField(max_length=10)
-    student=models.CharField(max_length=30) #studentName
+    student=models.CharField(max_length=40) #studentName
     rollNo=models.CharField(max_length=25)
     level=models.CharField(max_length=50)
     event=models.CharField(max_length=150)
@@ -129,3 +123,42 @@ class objectiveModel(models.Model):
 
     def __str__(self):
         return f"{self.POId}-{self.title}"
+
+
+class EventShowcaseModel(models.Model):
+    title=models.CharField(max_length=50)
+    description=models.TextField()
+    date=models.DateTimeField()
+    image=models.ImageField(upload_to="Assosation-Events")
+
+    def __str__(self):
+        return f"{self.title}-{self.date}"
+    
+class AssosationProgramModel(models.Model):
+    programType=models.CharField(max_length=50)
+    year=models.IntegerField()
+    count=models.IntegerField()
+
+    def __str__(self):
+        return f"{self.programType}-{self.year}"
+    
+class AssosiationMembersModel(models.Model):
+    name=models.CharField(max_length=40)
+    desigination=models.CharField(max_length=50)
+    year=models.CharField(max_length=10)
+    profilePic=models.ImageField(upload_to="Assosiation Members",null=True)
+    acadmaicYear=models.CharField(max_length=12) 
+    phoneNum=models.CharField(max_length=12,null=True)
+
+    def __str__(self):
+        return f"{self.name}-{self.desigination}"
+
+class AssossationFacultyModel(models.Model):
+    name=models.CharField(max_length=40)
+    desigination=models.CharField(max_length=50)
+    email=models.EmailField()
+    phoneNum=models.CharField(max_length=13)
+
+    def __str__(self):
+        return f"{self.name}-{self.desigination}"
+    

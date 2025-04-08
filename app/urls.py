@@ -10,7 +10,7 @@ urlpatterns=[
     path("login/student/",views.LoginViewClass,name="Student login"),
     path("signup/teacher/",views.TeacherRegisterClass,name="Teacher Signup"),
     path("login/teacher/",views.TeacherLoginClass,name="Login teacher"),
-    path('assosation/members/',views.AssosationViewClass,name="Assosation members"),
+#    path('assosation/members/',views.AssosationViewClass,name="Assosation members"),
     path('placment/',views.PlacmentViewClass,name="List of top placed and batch"),
     path('placment/<str:Batch>/',views.PlacmentBatchViewClass,name="placment of a batch"),
     path('event/certificate/',views.EventCertificateViewClass,name="Certificate register"),
@@ -21,6 +21,7 @@ urlpatterns=[
     path("badges/description/",views.BadgeDetailClass,name="Badge description"),
     path("teacher/studentList/",views.StudentListClass,name="Student list for mentor"),
     #path("teacher/studentDetail/<str:rollNo>/",views.StudentDetailClass,name="Student detail for teacher")
-    path("about/programOutcome/",views.ObjectiveClass,name="Program objective")
+    path("about/programOutcome/",views.ObjectiveClass,name="Program objective"),
+    path("assosation/",views.AssosationViewClass,name="Assostaion home page"),
 
 ]

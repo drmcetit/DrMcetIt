@@ -1,17 +1,6 @@
 from rest_framework import serializers
 
-from .models import AssosiationMembersModel,PlacementModel,EventModel,StudentModel,BadgeModel,objectiveModel
-
-class AssositationSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model=AssosiationMembersModel
-        fields=[
-            'Name',
-            'Desigination',
-            'Year',
-            'ProfilePic'
-        ]
+from .models import AssosiationMembersModel,PlacementModel,EventModel,StudentModel,BadgeModel,objectiveModel,EventShowcaseModel,AssosationProgramModel,AssossationFacultyModel
 
 class PlacmentSerializer(serializers.ModelSerializer):
 
@@ -115,4 +104,48 @@ class objectiveSerializer(serializers.ModelSerializer):
             'POId',
             'title',
             'description'
+        ]
+
+class EventShowcaseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=EventShowcaseModel
+        fields=[
+            'title',
+            'description',
+            'date',
+            'image'
+        ]
+
+class AssosationProgramSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=AssosationProgramModel
+        fields=[
+            'programType',
+            'year',
+            'count'
+        ]
+
+class AssositationMemberSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=AssosiationMembersModel
+        fields=[
+            'name',
+            'desigination',
+            'year',
+            'profilePic',
+            'acadmaicYear'
+        ]
+
+class AssossationFacultySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=AssossationFacultyModel
+        fields=[
+            'name',
+            'desigination',
+            'email',
+            'phoneNum'
         ]

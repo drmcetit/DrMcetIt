@@ -17,8 +17,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.middleware.csrf import get_token
 
-from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel,ClassModel,objectiveModel
-from .serializers import AssositationSerializer,PlacmentSerializer,EventSerializer,StudentSerializer,BadgeSerializer,objectiveSerializer
+from .models import AssosiationMembersModel,PlacementModel,StudentModel,EventModel,BadgeModel,TeacherModel,ClassModel,objectiveModel,EventShowcaseModel,AssosationProgramModel,AssossationFacultyModel
+from .serializers import AssositationMemberSerializer,PlacmentSerializer,EventSerializer,StudentSerializer,BadgeSerializer,objectiveSerializer,EventShowcaseSerializer,AssosationProgramSerializer,AssossationFacultySerializer
 
 # Create your views here.
 
@@ -60,6 +60,14 @@ def separateDate(serializer):#seprateDate
     #Seprate the date and time and return date in the qs
     for i in serializer:
         i["date"]=i["date"][:10]
+    return serializer
+
+def giveMonthName(serializer):
+    Months=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November",  "December"]
+    for i in serializer:
+        year=i["date"][:4]
+        month=int(i["date"][5-7])
+        i["date"]=f"{Months[month-1]} {year}"
     return serializer
 
 
@@ -126,7 +134,7 @@ class Register(views.APIView):
         student=StudentModel(User=user,Name=username,RollNum=RollNum,CC=teacherName,Section=section)
         student.save()
         print(f"User Added({username})")
-        return JsonResponse({'register':f"student account({RollNum}) successfully registered"},status=status.HTTP_200_OK)
+        return JsonResponse({'register':f"student account({RollNum}) successfully registered"},status=status.HTTP_201_CREATED)
         
 RegisterClass=Register.as_view()
 
@@ -236,21 +244,21 @@ class TeacherLoginView(views.APIView):
 
 TeacherLoginClass=TeacherLoginView.as_view()
 
-class AssosationView(generics.ListAPIView):
+# class AssosationView(generics.ListAPIView):
 
-    queryset=AssosiationMembersModel.objects.all()
-    serializer_class=AssositationSerializer
-    permission_classes=[]
-    authentication_classes=[]
+#     queryset=AssosiationMembersModel.objects.all()
+#     serializer_class=AssositationSerializer
+#     permission_classes=[]
+#     authentication_classes=[]
 
-    def get(self, request, *args, **kwargs):
-        qs=AssosiationMembersModel.objects.all()
-        members=AssositationSerializer(qs,many=True)
-        # return super().get(request, *args, **kwargs)
+#     def get(self, request, *args, **kwargs):
+#         qs=AssosiationMembersModel.objects.all()
+#         members=AssositationSerializer(qs,many=True)
+#         # return super().get(request, *args, **kwargs)
 
-        return JsonResponse({"Members":members.data},status=status.HTTP_200_OK)
+#         return JsonResponse({"Members":members.data},status=status.HTTP_200_OK)
 
-AssosationViewClass=AssosationView.as_view()
+# AssosationViewClass=AssosationView.as_view()
 
 class PlacmentView(generics.ListAPIView):
 
@@ -519,7 +527,7 @@ ProfileEditClass=ProfileEditView.as_view()
 class ProfileView(generics.ListAPIView):
     queryset=StudentModel.objects.all()
     serializer_class=StudentSerializer
-
+    
     def get(self, request, *args, **kwargs):
         user=self.request.user
 
@@ -609,3 +617,65 @@ class ObjectiveView(generics.ListAPIView):
         return JsonResponse(PO,status=status.HTTP_200_OK)
 
 ObjectiveClass=ObjectiveView.as_view()
+
+class AssosationView(views.APIView):    #AS this view deal with mutiple models inget method
+
+    def get(self,request):
+
+        #Event showcase
+        Eventqs=EventShowcaseModel.objects.all().order_by("-date")
+        EventSerialize=EventShowcaseSerializer(Eventqs,many=True)
+        Event=giveMonthName(EventSerialize.data)
+
+        #Programs Conducted
+        programTypeqs=AssosationProgramModel.objects.values_list("programType").distinct()
+        programType=[]
+        for i in programTypeqs:
+            programType.extend(i)
+        programType.append('Total Events')
+        
+        programYearqs=AssosationProgramModel.objects.values_list("year",flat=True).distinct().order_by("-year")
+        if programYearqs.count()>5:
+            programYearqs=programYearqs[:5]
+        print(programYearqs)
+        years=[]
+        #programCount={2023:[1,2,3,total],2022:[4,5,6,total]}
+        programCount={}
+        for i in programYearqs:
+            years.append(i)
+            events=AssosationProgramModel.objects.filter(year=i)
+            count=[]
+            for i in events:
+                count.append(i.count)
+            count.append(sum(count))
+            print(count)
+            programCount[str(i.year)]=count
+        total=[]
+        for i in range(len(count)):
+            Sum=0
+            for j in programCount:
+                Sum+=programCount[j][i]
+            total.append(Sum)
+        programCount["total"]=total
+        print(programCount)
+        years.append("Total")
+
+        #Office Bearers
+        AssosiationMembersqs=AssosiationMembersModel.objects.all()
+        AssosiationMembers=AssositationMemberSerializer(AssosiationMembersqs,many=True)
+        AssossationFacultyqs=AssossationFacultyModel.objects.all()[:3]
+        AssossationFaculty=AssossationFacultySerializer(AssossationFacultyqs,many=True)
+
+        #callus
+        presidentNum=AssosiationMembersModel.objects.get(Q(desigination="President") | Q(desigination="president")).phoneNum
+        SecretaryNum=AssosiationMembersModel.objects.get(Q(desigination="Secretary") | Q(desigination="secretary")).phoneNum
+
+        return Response({"eventShowcase":Event,
+                         "programsType":programType,"years":years,"programCount":programCount,
+                         "officeBearers":AssosiationMembers.data,
+                         "AssossationFaculty":AssossationFaculty.data,
+                         "presidentNum":presidentNum,"SecretaryNum":SecretaryNum,
+                         },status=status.HTTP_200_OK)
+
+AssosationViewClass=AssosationView.as_view()
+
