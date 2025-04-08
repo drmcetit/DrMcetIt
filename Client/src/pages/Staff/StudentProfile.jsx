@@ -145,6 +145,8 @@ export const StudentProfile = () => {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [studentsData, setStudentsData] = useState([]);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
   const [noActivity, setNoActivity] = useState(false)
   const { User } = useParams();
   console.log("Student User from useParams:", User);
@@ -195,7 +197,11 @@ if (!student) {
     </div>
   );
 }
-
+ // View details of an activity
+ const viewActivityDetails = (activity) => {
+  setSelectedActivity(activity);
+  setShowDetailModal(true);
+};
   return (
     <Container fluid className="p-4">
       <Button variant="outline-primary" className="mb-4" onClick={() => navigate("/staff-profile")}>
@@ -343,6 +349,7 @@ if (!student) {
                       <th>Date</th>
                       <th>Category</th>
                       <th>Place</th>
+                      <th>View More</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -367,6 +374,9 @@ if (!student) {
                             {activity.place}
                           </Badge>
                         </td>
+                        <td>
+                          <button className="btn btn-outline-primary py-0 px-3" onClick={() => viewActivityDetails(activity)}>View</button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -376,6 +386,130 @@ if (!student) {
           </Card>
         </Col>
       </Row>
+      {/* Activity Detail Modal */}
+              {selectedActivity && (
+                <div
+                  className={`modal ${showDetailModal ? "show d-block" : ""}`}
+                  tabIndex="-1"
+                  style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                >
+                  <div className="modal-dialog modal-lg">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h5 className="modal-title">{selectedActivity.event}</h5>
+                        <button type="button" className="btn-close" onClick={() => setShowDetailModal(false)}></button>
+                      </div>
+                      <div className="modal-body">
+                        <Row className="mb-4">
+                          <Col md={6}>
+                            <h6>Student Information</h6>
+                            <table className="table table-sm table-borderless">
+                              <tbody>
+                                <tr>
+                                  <td className="fw-medium">Name:</td>
+                                  <td>{selectedActivity.student}</td>
+                                </tr>
+                                <tr>
+                                  <td className="fw-medium">Roll No:</td>
+                                  <td>{selectedActivity.rollNo}</td>
+                                </tr>
+                                <tr>
+                                  <td className="fw-medium">Department:</td>
+                                  <td>{selectedActivity.department}</td>
+                                </tr>
+                                <tr>
+                                  <td className="fw-medium">Academic Year:</td>
+                                  <td>{selectedActivity.year}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </Col>
+                          <Col md={6}>
+                            <h6>Event Information</h6>
+                            <table className="table table-sm table-borderless">
+                              <tbody>
+                                <tr>
+                                  <td className="fw-medium">Event:</td>
+                                  <td>{selectedActivity.event}</td>
+                                </tr>
+                                <tr>
+                                  <td className="fw-medium">Date:</td>
+                                  <td>{new Date(selectedActivity.date).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                  <td className="fw-medium">Category:</td>
+                                  <td>{selectedActivity.category}</td>
+                                </tr>
+                                <tr>
+                                  <td className="fw-medium">Level:</td>
+                                  <td>{selectedActivity.level}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </Col>
+                        </Row>
+      
+                        <Row className="mb-4">
+                          <Col md={6}>
+                            <h6>Participation Details</h6>
+                            <table className="table table-sm table-borderless">
+                              <tbody>
+                                <tr>
+                                  <td className="fw-medium">Type:</td>
+                                  <td>{selectedActivity.type}</td>
+                                </tr>
+                                <tr>
+                                  <td className="fw-medium">Mode:</td>
+                                  <td>{selectedActivity.mode}</td>
+                                </tr>
+                                <tr>
+                                  <td className="fw-medium">Participation:</td>
+                                  <td>{selectedActivity.teamInd}</td>
+                                </tr>
+                                <tr>
+                                  <td className="fw-medium">place:</td>
+                                  <td>
+                                    <div>
+                                      {selectedActivity.place}
+                                    </div>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </Col>
+                          <Col md={6}>
+                            <h6>Organizer Information</h6>
+                            <table className="table table-sm table-borderless">
+                              <tbody>
+                                <tr>
+                                  <td className="fw-medium">Organizer:</td>
+                                  <td>{selectedActivity.organizer}</td>
+                                </tr>
+                                {selectedActivity.club && (
+                                  <tr>
+                                    <td className="fw-medium">Club/Cell:</td>
+                                    <td>{selectedActivity.club}</td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </Col>
+                        </Row>
+      
+                        <div className="mb-3">
+                          <h6>Description</h6>
+                          <p>{selectedActivity.description}</p>
+                        </div>
+                      </div>
+                      <div className="modal-footer">
+                        <Button variant="outline-secondary" onClick={() => setShowDetailModal(false)}>
+                          Close
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
     </Container>
   )
 }

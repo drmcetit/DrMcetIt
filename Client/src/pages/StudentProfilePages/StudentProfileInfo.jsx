@@ -70,6 +70,9 @@ export const StudentProfileInfo = () => {
     setCc(response.data.CC);
     setMentor(response.data.Mentor);
     setBio(response.data.bio);
+    if(response.data.bio == "null"){
+      setBio("")
+    }
 
     const profilePicture = `http://127.0.0.1:8000/${response.data.profilePic}`;
     setProfilePic(profilePicture);

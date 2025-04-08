@@ -123,7 +123,7 @@ export const StaffSignup = () => {
                       <Form.Control
                         type="empId"
                         name="empId"
-                        placeholder="72762*bit***@mcet.in"
+                        placeholder="MIT**"
                         value={formData.empId}
                         onChange={handleChange}
                         isInvalid={!!errors.empId}

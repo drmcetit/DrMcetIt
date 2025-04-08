@@ -11,8 +11,8 @@ export const StudentProfileDashboard = () => {
   const [cgpa, setCGPA] = useState("0");
   const [participationBadge, setparticipationBadge] = useState("0");
   const [WinnerCount, setWinnerCount] = useState("0");
-  const [particpataionBadgeImg, setparticpataionBadgeImg] = useState("Association_Hero.png")
-  const [winnerBadge, setwinnerBadge] = useState("Association_Hero.png")
+  const [particpataionBadgeImg, setparticpataionBadgeImg] = useState("")
+  const [winnerBadge, setwinnerBadge] = useState("")
 
   const fetchActivities = async () => {
     try {
