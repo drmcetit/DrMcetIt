@@ -1,9 +1,23 @@
-"use client"
-
 import { Award, Heart, Mail, Phone, MapPin, Trophy } from "lucide-react"
-import { useEffect } from "react"
+import { ToastContainer, toast } from 'react-toastify';
+import { useEffect, useState } from "react"
 
 export const Association = () => {
+  const [sendNotify, setSendNotify] = useState(false)
+  const notify = () => {
+    toast.success('Message Sent Successfully...', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+
+  };
+
   // This will run client-side after the component mounts
   useEffect(() => {
     // Auto-moving office bearers carousel
@@ -20,8 +34,45 @@ export const Association = () => {
     return () => clearInterval(interval)
   }, [])
 
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    formData.append("access_key", "751cab5d-76af-4868-97f4-d4092bfc4d51");
+
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: json
+    }).then((res) => res.json());
+
+    if (res.success) {
+      console.log("Success", res);
+      //alert("Form submitted");
+      setSendNotify(notify);
+    }
+  };
+
   return (
-    <div className="container-fluid p-0 pt-5">     
+    <div className="container-fluid p-0 pt-5">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
 
       {/* Unique Events Carousel */}
       <div className="container mt-5 mb-5">
@@ -196,12 +247,12 @@ export const Association = () => {
           <div className="col-lg-6">
             <h2 className="display-6 fw-bold mb-4">About the Association</h2>
             <p className="lead">
-            The IT Association is involved in the planning and integration of student technical activities. It promotes a sense of group responsibility and plays the critical role of student representation for preparing themselves to the IT industry.
+              The IT Association is involved in the planning and integration of student technical activities. It promotes a sense of group responsibility and plays the critical role of student representation for preparing themselves to the IT industry.
             </p>
             <ul>
-                <li>Conducting the professional activities such as Guest lectures, Seminars, Technical Symposiums etc.</li>
-                <li>Encourage a close knit interpersonal relationship among the members.</li>
-                <li>Encourage a close knit interpersonal relationship among the members.</li>
+              <li>Conducting the professional activities such as Guest lectures, Seminars, Technical Symposiums etc.</li>
+              <li>Encourage a close knit interpersonal relationship among the members.</li>
+              <li>Encourage a close knit interpersonal relationship among the members.</li>
             </ul>
             <div className="d-flex flex-wrap gap-2 mt-4">
               <div className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">Student-Led</div>
@@ -640,7 +691,7 @@ export const Association = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="office-bearer-card px-2" style={{ minWidth: "300px" }}>
               <div className="card border-0 shadow-sm h-100">
                 <div className="position-relative">
@@ -663,7 +714,7 @@ export const Association = () => {
 
           </div>
 
-          
+
 
           {/* Navigation controls */}
           <div className="position-absolute top-50 start-0 translate-middle-y">
@@ -775,7 +826,6 @@ export const Association = () => {
                   <div className="col-md-8">
                     <div className="card-body">
                       <h5 className="card-title fw-bold">Mr.J.Dhyaneswaran</h5>
-                      <p className="card-text text-primary mb-1">Events Advisor</p>
                       <p className="card-text text-muted small mb-2">Assistant Professor (SS) / IT</p>
                       <p className="card-text small">
                         <Mail className="me-2" size={14} />
@@ -857,7 +907,7 @@ export const Association = () => {
                   <div>
                     <h5 className="fw-bold">Call Us</h5>
                     <p className="text-muted mb-0">
-                      Office: 
+                      Office:
                       <br />
                       President:
                       <br />
@@ -907,26 +957,26 @@ export const Association = () => {
             <div className="card border-0 shadow-sm">
               <div className="card-body p-4">
                 <h4 className="fw-bold mb-4">Send Us a Message</h4>
-                <form>
+                <form onSubmit={onSubmit}>
                   <div className="row mb-3">
                     <div className="col-md-6 mb-3 mb-md-0">
                       <label htmlFor="name" className="form-label">
                         Your Name
                       </label>
-                      <input type="text" className="form-control" id="name" placeholder="Enter your name" />
+                      <input type="text" name="Name" className="form-control" id="name" placeholder="Enter your name" required />
                     </div>
                     <div className="col-md-6">
                       <label htmlFor="email" className="form-label">
                         Your Email
                       </label>
-                      <input type="email" className="form-control" id="email" placeholder="Enter your email" />
+                      <input type="email" name="College mail" className="form-control" id="email" placeholder="Enter your email" required />
                     </div>
                   </div>
                   <div className="mb-3">
                     <label htmlFor="subject" className="form-label">
                       Subject
                     </label>
-                    <input type="text" className="form-control" id="subject" placeholder="Enter subject" />
+                    <input type="text" name="Subject" className="form-control" id="subject" placeholder="Enter subject" required />
                   </div>
                   <div className="mb-3">
                     <label htmlFor="message" className="form-label">
@@ -935,13 +985,16 @@ export const Association = () => {
                     <textarea
                       className="form-control"
                       id="message"
+                      name="Message"
                       rows={5}
                       placeholder="Enter your message"
+                      required
                     ></textarea>
                   </div>
-                  <button type="submit" className="btn btn-primary w-100 py-2">
+                  <button type="submit" className="btn btn-primary w-100 py-2" onClick={sendNotify} >
                     Send Message
                   </button>
+
                 </form>
               </div>
             </div>

@@ -4,12 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 
-export const Login = () => {
+export const Login = ({notify}) => {
   const [formData, setFormData] = useState({ collegeMail: "", password: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false); 
   const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(false); 
   const navigate = useNavigate();
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -116,7 +117,7 @@ export const Login = () => {
                   </Form.Group>
 
                   {/* Sign In Button */}
-                  <Button type="submit" variant="primary" className="w-100 mb-3" disabled={isSubmitting}>
+                  <Button type="submit" variant="primary" className="w-100 mb-3" disabled={isSubmitting} onClick={notify} >
                     {isSubmitting ? "Signing in..." : "Sign In"}
                   </Button>
                 </Form>
@@ -142,4 +143,3 @@ export const Login = () => {
     </div>
   );
 };
-

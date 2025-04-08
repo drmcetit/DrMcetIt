@@ -1,10 +1,34 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGraduationCap,faShapes } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
 
 export const About = () => {
+  const [outcomes, setOutcomes] = useState({
+    PEO: [],
+    PO: [],
+    PSO: [],
+  });
+  
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/about/programOutcome/", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("API Response:", data);
+        const safeData = {
+          PEO: Array.isArray(data?.PEO) ? data.PEO : [],
+          PO: Array.isArray(data?.PO) ? data.PO : [],
+          PSO: Array.isArray(data?.PSO) ? data.PSO : [],
+        };
+        setOutcomes(safeData);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+  
   return (
     <Container style={{marginTop:"15vh"}}>
         <h1 className="text-center fw-bold">About Our Department</h1>
@@ -50,123 +74,62 @@ export const About = () => {
                    </button>
         </div>
 
-        <img src="About_IT.png" alt="About IT" className='img-thumbnail my-5 border rounded-1' />
+        {/* <img src="About_IT.png" alt="About IT" className='img-thumbnail my-5 border rounded-1' /> */}
+        <div>
+          <h4>About Department</h4>
+          <p className='fs-6' style={{textAlign:"justify"}} >The department of Information Technology was established in 1999. The department offers B.Tech. (IT) programme, which combines faculties with expertise in various fields and good laboratory facilities for imparting knowledge to the students. This enables students to face the challenging needs of the industries and research institutions. The department is affiliated to Anna University & B.Tech. Information Technology Programme is accredited by the National Board of Accreditation (NBA), AICTE, New Delhi.
+          </p>
+          <p className='fs-6' style={{textAlign:"justify"}} >The department conducted several national level workshops, Seminars, FDP, SDP, Conferences, etc. Our Department faculty members have published their research work in Reputed national/international Journals namely IEEE Transaction on Image Processing, IEEE Communications, ACM, Springer, etc. Our faculty members are involved in various research works, such as in the fields of Signal Processing, Image Processing, Networking, Data Mining, Soft Computing, etc.,</p>
+        </div>
 
-        {/* <Row className="g-4">
-          <Col xs={12} sm={12} md={12} lg={12} xl={12} xxl={12}  >
-            <Card className="shadow-sm" style={{
-                backgroundImage: "about_bg.png",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat:"no-repeat",
-                borderRadius: "8px",
-                }} >
-              <Card.Body style={{
-                    backgroundImage: "about_bg.png",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    borderRadius: "8px",
-                }}>
-                <Card.Title className="d-flex align-items-center gap-2">
-                <i class="bi bi-info-circle"></i>
-                  About
-                </Card.Title>
-                <Card.Text className="text-muted">
-                  Learn about our history, vision, mission, and faculty members.
-                </Card.Text>
-                <Link to="/about" className="text-primary" style={{textDecoration:"none"}}>
-                  Learn more →
-                </Link>
-              </Card.Body>
-            </Card>
-          </Col>
+        
 
-          <Col xs={12} sm={12} md={12} lg={6} xl={6} xxl={6}>
-            <Card className="shadow-sm">
-              <Card.Body>
-                <Card.Title className="d-flex align-items-center gap-2">
-                <FontAwesomeIcon icon={faGraduationCap} />
-                  Placement
-                </Card.Title>
-                <Card.Text className="text-muted">
-                  Discover our placement records, top recruiters, and success stories.
-                </Card.Text>
-                <Link to="/placement" className="text-primary" style={{textDecoration:"none"}}>
-                  Learn more →
-                </Link>
-              </Card.Body>
-            </Card>
-          </Col>
+<div className="border rounded-1 p-3">
 
-          <Col xs={12} sm={12} md={12} lg={6} xl={6} xxl={6}>
-            <Card className="shadow-sm">
-              <Card.Body>
-                <Card.Title className="d-flex align-items-center gap-2">
-                <FontAwesomeIcon icon={faShapes} />
-                  Facilities
-                </Card.Title>
-                <Card.Text className="text-muted">
-                  Explore our state-of-the-art labs, library, and research facilities.
-                </Card.Text>
-                <Link to="/facilities" className="text-primary" style={{textDecoration:"none"}}>
-                  Learn more →
-                </Link>
-              </Card.Body>
-            </Card>
-          </Col>
+{/* Program Educational Objectives (PEO's) */}
+<div className="peo">
+  <h4>Program Educational Objectives (PEO's)</h4>
+  {outcomes.PEO?.map((item, index) => (
+    <div className="my-4" key={item.POId}>
+      <p className='fs-6 m-0 p-0' style={{ textAlign: "justify" }}>
+        <span className="fw-bold">{item.POId}: </span>
+        {item.title && <span className="fw-semibold">{item.title}: </span>}
+        {item.description}
+      </p>
+    </div>
+  ))}
+</div>
 
-          <Col xs={12} sm={12} md={12} lg={6} xl={6} xxl={6}>
-            <Card className="shadow-sm">
-              <Card.Body>
-                <Card.Title className="d-flex align-items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#000" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3s1.34 3 3 3m-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5S5 6.34 5 8s1.34 3 3 3m0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5m8 0c-.29 0-.62.02-.97.05c1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5"/></svg>
-                  Association
-                </Card.Title>
-                <Card.Text className="text-muted">
-                  Join our student clubs, events, and professional associations.
-                </Card.Text>
-                <Link to="/association" className="text-primary" style={{textDecoration:"none"}}>
-                  Learn more →
-                </Link>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row> */}
+{/* Program Outcomes (POs) */}
+<div className="peo">
+  <h4>Program Outcomes</h4>
+  {outcomes.PO?.map((item, index) => (
+    <div className="my-4" key={item.POId}>
+      <p className='fs-6 m-0 p-0' style={{ textAlign: "justify" }}>
+        <span className="fw-bold">{item.POId}: </span>
+        {item.title && <span className="fw-semibold">{item.title}: </span>}
+        {item.description}
+      </p>
+    </div>
+  ))}
+</div>
 
-        <div className='border rounded-1 p-3'>
-        <div className='peo'>
-        <h4 className="">Program Educational Objectivies (PEO's)</h4>
-        <div  className='my-4'>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        </div>
-        </div>
-        <div className='peo'>
-        <h4 className="">Program Outcomes</h4>
-        <div  className='my-4'>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        </div>
-        </div>
-        <div className='peo'>
-        <h4 className="">Program Specific Outcomes (PSOs)</h4>
-        <div  className='my-4'>
-        <p style={{textAlign:"justify"}} className='m-0' ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        <p style={{textAlign:"justify"}} className='m-0' ><span className='fw-bold'>PEO1: </span>Technical Expertise: Have high level of technical compentency to identify problems and to generate innovative solutions which would conform to the needs of IT industry</p>
-        </div>
-        </div>
-        </div>
+{/* Program Specific Outcomes (PSOs) */}
+<div className="peo">
+  <h4>Program Specific Outcomes (PSOs)</h4>
+  {outcomes.PSO?.map((item, index) => (
+    <div className="my-4" key={item.POId}>
+      <p className='fs-6 m-0 p-0' style={{ textAlign: "justify" }}>
+        <span className="fw-bold">{item.POId}: </span>
+        {item.title && <span className="fw-semibold">{item.title}: </span>}
+        {item.description}
+      </p>
+    </div>
+  ))}
+</div>
+
+</div>
+
 
         
 
