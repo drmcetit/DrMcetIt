@@ -8,7 +8,8 @@ export const Login = ({notify}) => {
   const [formData, setFormData] = useState({ collegeMail: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false); 
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(false); 
+  const [error, setError] = useState(false);
+  const [sendNotify, setSendNotify] = useState(false) 
   const navigate = useNavigate();
 
 
@@ -44,6 +45,7 @@ export const Login = ({notify}) => {
         console.log(loginResponse.data);
 
         navigate("/");
+        setSendNotify(notify)
     } catch (error) {
       setError(true);
       console.error("Error response:", error.loginResponse?.data || error.loginResponse.data);
@@ -117,7 +119,7 @@ export const Login = ({notify}) => {
                   </Form.Group>
 
                   {/* Sign In Button */}
-                  <Button type="submit" variant="primary" className="w-100 mb-3" disabled={isSubmitting} onClick={notify} >
+                  <Button type="submit" variant="primary" className="w-100 mb-3" disabled={isSubmitting} onClick={sendNotify} >
                     {isSubmitting ? "Signing in..." : "Sign In"}
                   </Button>
                 </Form>

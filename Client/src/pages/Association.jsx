@@ -61,6 +61,7 @@ export const Association = () => {
 
   return (
     <div className="container-fluid p-0 pt-5">
+      
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -73,6 +74,7 @@ export const Association = () => {
         pauseOnHover
         theme="colored"
       />
+
 
       {/* Unique Events Carousel */}
       <div className="container mt-5 mb-5">
